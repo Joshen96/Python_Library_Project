@@ -1,10 +1,9 @@
+from cmath import nan
 from tkinter import * 
 from tkinter import ttk
 from tkinter import messagebox
 import pandas as pd 
-import bookinfo # 도서정보 py 불러오기
-import tkinter as tk
-
+import userinfo # 도서정보 py 불러오기
 
 #### 데이터프레임, csv 부분  (data, data2 는 실험 후 삭제하면 됨)
 data = {'도서명' : ['따라하면 배우는 파이썬', '따라하면 배우는 파이썬2'], # 전체도서확인용 데이터
@@ -28,22 +27,22 @@ data2 = {'도서명' : ['따라하면 배우는 파이썬', '따라하면 배우
 #print(df2)
 #df2.to_csv("bookinfo.csv", mode="w", encoding='utf-8-sig', index=False)
 
-df1 = pd.read_csv ('book.csv')
+df1 = pd.read_csv ('user.csv')
 df1_list = df1.values.tolist()
 
 #### 함수 부분
 def info(): # 트리뷰 클릭한 값 넘기기
-    try: # 도서 클릭안하고 도서정보 버튼 눌렀을 경우 예외처리 
+    try: # 회원 클릭안하고 회원정보 버튼 눌렀을 경우 예외처리 
         aaa = Treeview1.focus() # 트리뷰 클릭한 줄
         treeviewValues = Treeview1.item(aaa).get('values')
         for k in df1_list:
           if treeviewValues[0] == k[0]  :
-              bookinfo.bookInfo(k[0], k[1], k[6], k[2], k[5], k[3], k[7], k[8])
+              userinfo.userInfo(k[0], k[1], k[6], k[2], k[5], k[3], k[7], k[8])
     except IndexError:
-        messagebox.showinfo("알림", "도서를 클릭해주세요.")
-        print("도서를 클릭해주세요. ")
+        messagebox.showinfo("알림", "회원을 클릭해주세요.")
+        print("회원을 클릭해주세요. ")
 
-def bookSearch():  # 도서 검색
+def bookSearch():  # 회원 검색
     for i in Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
         Treeview1.delete(i)
 
@@ -52,19 +51,25 @@ def bookSearch():  # 도서 검색
     cboxText = comboBox1.get() # 콤보박스 값 가져오기
     print(cboxText)
 
-    if cboxText == '제목':
+    if cboxText == '이름':
         c = 1
         for e in df1_list:
-            if searchText in e[0]: # 제목과 부분일치할 경우 
+            if searchText in e[1]: # 이름과 부분일치할 경우 
+                gen = gender1(i[3])
+                rent = rent1(i[7])
+                cUser = currentUser(i[6])
                 # 표에 데이터 삽입
-                TreeviewText=Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                TreeviewText=Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, rent, e[4] ), iid= c-1)
                 c += 1
-    elif cboxText == '저자':
+    elif cboxText == '전화번호':
         c = 1
         for e in df1_list:
-            if searchText in e[1]: # 저자와 부분일치할 경우 
+            if searchText in e[0]: # 전화번호와 부분일치할 경우 
+                gen = gender1(i[3])
+                rent = rent1(i[7])
+                cUser = currentUser(i[6])
                 # 표에 데이터 삽입
-                TreeviewText=Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                TreeviewText=Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, rent, e[4] ), iid= c-1)
                 c += 1
 
     #win.update()
@@ -73,6 +78,34 @@ def keyEvent(event):  # 실시간 검색 기능
     print(event.keycode)
     if 8 <= event.keycode <= 105:
         bookSearch()
+
+def gender1(g):
+    gen =''
+    if g == 0: # 여성
+        gen = '여성'
+
+    elif g == 1: # 남성
+        gen = '남성'
+    return gen
+
+def rent1(r):
+    rent =''
+    if r == 0: # 대여가능
+        rent = '대여가능'
+
+    elif r == 1: # 대여불가
+        rent = '대여불가'
+    return rent
+
+def currentUser(c):
+    print(str(c))
+    cUser = ''
+    if c != c : # 회원
+        cUser = '회원'
+
+    else : # 탈퇴회원
+        cUser = '탈퇴회원'
+    return cUser
 
 #### 메인 소스 부분
 if __name__ == "__main__":
@@ -108,8 +141,8 @@ if __name__ == "__main__":
     frameCombo=Frame(Frame1, relief='flat')
     frameCombo.grid(row=1, column=1, columnspan=1, rowspan=1, sticky=N)
 
-    comboBox1=ttk.Combobox(frameCombo, width=5, state='readonly')
-    comboBox1['values']=('제목', '저자')
+    comboBox1=ttk.Combobox(frameCombo, width=7, state='readonly')
+    comboBox1['values']=('이름', '전화번호')
     comboBox1.current(0)
     comboBox1.grid(row=0, column=1,sticky=N)
     labelCombo=Label(frameCombo, text='')
@@ -118,26 +151,31 @@ if __name__ == "__main__":
     # 트리뷰 부분
     frame2=Frame(Frame1, relief='flat', borderwidth=1, padx=20, pady=10)
     frame2.grid(row=2, column=0, columnspan=5, rowspan=1, sticky=N)
-    Treeview1=ttk.Treeview(frame2, height=10, columns=('#1', '#2', '#3', '#4', '#5', '#6'))
-    Treeview1.column('#0', width=40, minwidth=40, stretch=NO) # stretch : 열의 너비 조정 설정 여부
-    Treeview1.heading('#0',text='권수',anchor=N)
-    Treeview1.column('#1', width=140, minwidth=100, stretch=NO) # stretch : 열의 너비 조정 설정 여부
-    Treeview1.heading('#1',text='도서명',anchor=N)
-    Treeview1.column('#2', width=70, minwidth=60, stretch=NO)
-    Treeview1.heading('#2',text='저자',anchor=N)
-    Treeview1.column('#3', width=70, minwidth=50, stretch=NO)
-    Treeview1.heading('#3',text='가격',anchor=N)
-    Treeview1.column('#4', width=100, minwidth=70, stretch=NO)
-    Treeview1.heading('#4',text='ISBN',anchor=N)
-    Treeview1.column('#5', width=70, minwidth=50, stretch=NO)
-    Treeview1.heading('#5',text='대출여부',anchor=N)
-    Treeview1.column('#6', width=180, minwidth=150, stretch=NO)
-    Treeview1.heading('#6',text='URL',anchor=N)
+    Treeview1=ttk.Treeview(frame2, height=10, columns=('#1', '#2', '#3', '#4', '#5', '#6', '#7'))
+    Treeview1.column('#0', width=50, minwidth=40, stretch=NO) # stretch : 열의 너비 조정 설정 여부
+    Treeview1.heading('#0',text='회원수',anchor=N)
+    Treeview1.column('#1', width=80, minwidth=70, stretch=NO) # stretch : 열의 너비 조정 설정 여부
+    Treeview1.heading('#1',text='이름',anchor=N)
+    Treeview1.column('#2', width=100, minwidth=100, stretch=NO)
+    Treeview1.heading('#2',text='생년월일',anchor=N)
+    Treeview1.column('#3', width=50, minwidth=40, stretch=NO)
+    Treeview1.heading('#3',text='성별',anchor=N)
+    Treeview1.column('#4', width=130, minwidth=120, stretch=NO)
+    Treeview1.heading('#4',text='전화번호',anchor=N)
+    Treeview1.column('#5', width=60, minwidth=50, stretch=NO)
+    Treeview1.heading('#5',text='회원현황',anchor=N)
+    Treeview1.column('#6', width=60, minwidth=40, stretch=NO)
+    Treeview1.heading('#6',text='대여',anchor=N) 
+    Treeview1.column('#7', width=140, minwidth=120, stretch=NO)
+    Treeview1.heading('#7',text='이메일주소',anchor=N) 
 
     c = 1
     # 표에 데이터 삽입
     for i in df1_list:
-        TreeviewText=Treeview1.insert("", END, text=c, values=(i[0], i[1], i[2], i[3], i[4], i[5] ), iid= c-1)
+        gen = gender1(i[3])
+        rent = rent1(i[7])
+        cUser = currentUser(i[6])
+        TreeviewText=Treeview1.insert("", END, text=c, values=(i[1], i[2], gen, i[0], cUser, rent, i[4] ), iid= c-1)
         c += 1
     #TreeviewText=Treeview1.insert("", END, text='1', values=('2','d', 's', 'a', 'q', 'q'), iid="1") 
     Treeview1.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N)
@@ -147,19 +185,19 @@ if __name__ == "__main__":
     btnSearch.grid(row=1, column=3, columnspan=1, rowspan=1, sticky=N, padx=5)
 
     # 도서등록 버튼
-    btnBookRegist=ttk.Button(Frame1,text='도서등록',command=())
+    btnBookRegist=ttk.Button(Frame1,text='회원등록',command=())
     btnBookRegist.grid(row=3, column=0, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
 
     # 도서정보 버튼
-    btnBookInformation=ttk.Button(Frame1,text='도서정보', command=info )
+    btnBookInformation=ttk.Button(Frame1,text='회원정보', command=info )
     btnBookInformation.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=W, padx=5, pady=3)
 
     # 도서수정 버튼
-    btnBookEdit=ttk.Button(Frame1,text='도서수정',command=())
+    btnBookEdit=ttk.Button(Frame1,text='회원수정',command=())
     btnBookEdit.grid(row=3, column=2, columnspan=1, rowspan=1, sticky=W, padx=25, pady=3)
 
     # 도서 삭제 버튼
-    btnBookDelete=ttk.Button(Frame1,text='도서 삭제',command=() )
+    btnBookDelete=ttk.Button(Frame1,text='회원 삭제',command=() )
     btnBookDelete.grid(row=3, column=4, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
 
 
