@@ -1,4 +1,4 @@
-from tkinter import N
+from tkinter import N, filedialog, font
 from tkinter import messagebox
 from tkinter.messagebox import NO
 from tkinter.ttk import Combobox
@@ -56,6 +56,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         self.entryValue = tk.StringVar()
         self.entry1 = tk.Entry(self, width='35', textvariable=self.entryValue)
         self.entry1.grid(row=1, column=2, columnspan=1, rowspan=1, sticky=N, pady=1) # 위치 N, 외부 패딩 1
+        
 
         self.master.bind("<Key>", self.keyEvent )
         
@@ -124,8 +125,10 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
 
     def bookRegisterm(self): ##### 도서 등록 함수
         self.Book_register = Toplevel(self)
+        #self.Book_register.attributes('-topmost', 'true')
         self.Book_register.title("도서 등록")
         self.Book_register.geometry("400x450+740+270")
+        #self.Book_register.option_add('*Dialog.msg.font', 'Helvetica 40')
 
         # 도서등록 레이블
         Book_name_label = Label(self.Book_register, text = "제목 :")
@@ -137,6 +140,10 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         Book_photo_label = Label(self.Book_register, text = "사진 :")
         Book_account_label = Label(self.Book_register, text = "도서 설명 :")
 
+
+        self.Book_photo_label2 = Label(self.Book_register, text = "파일 열기를 통해 사진을 추가하세요. ", wraplength=350)
+
+
         # 도서등록 텍스트
         Book_name_entry = Entry(self.Book_register, width = 30)
         Book_author_entry = Entry(self.Book_register, width = 30)
@@ -144,13 +151,14 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         Book_price_entry = Entry(self.Book_register, width = 30)
         Book_link_text = Text(self.Book_register, width = 30, height = 2)
         Book_ISBN_entry = Entry(self.Book_register, width = 30)
-        Book_photo_entry = Entry(self.Book_register, width = 30)
+        self.Book_photo_entry = Entry(self.Book_register, width = 30)
+        
         Book_account_text = Text(self.Book_register, width = 40, height = 5)
 
         # 도서등록 버튼
-        file_open_btn = Button(self.Book_register, text = "파일 열기", command=() )
+        file_open_btn = Button(self.Book_register, text = "파일 열기", command = lambda : self.fileadd() )
         save_btn = Button(self.Book_register, text = " 저장 ", command = lambda : [self.registbook( Book_name_entry, Book_author_entry, Book_publisher_entry, Book_link_text, 
-        Book_ISBN_entry, Book_photo_entry, Book_account_text, Book_price_entry), self.on_closing() ])
+        Book_ISBN_entry, self.Book_photo_label2, Book_account_text, Book_price_entry), self.on_closing() ])
 
         # 도서등록 레이블 적용
         Book_name_label.place(x=15,y=20)
@@ -169,17 +177,23 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         Book_price_entry.place(x=100, y=140)
         Book_link_text.place(x=100, y=190)
         Book_ISBN_entry.place(x=100, y=230)
-        Book_photo_entry.place(x=100, y=270)
+        self.Book_photo_label2.place(x=100, y=270)
         Book_account_text.place(x=100, y=310)
 
 
         # 도서등록 버튼 적용
         file_open_btn.place(x = 320 ,y = 270)
         save_btn.place(x=200, y= 390)
-
+    
+    def fileadd(self):  # 파일 열기로 이미지 추가 함수  (나중에 예외 처리해야함 )
+        self.filename = filedialog.askopenfilename(initialdir='./gif',title='파일선택', filetypes=(('gif files','*.gif'),('jpg files','*.jpg'),('all files','*.*')))
+        path = self.filename
+        path_list = path.split('/')
+        fn = path_list[-1]   # 파일명만 출력하기
+        self.Book_photo_label2.configure(text= fn)
+        self.Book_register.lift()
 
     def registbook(self, title, author, publisher, link, ISBN, photo, text, price ):
-        #print(photo.get())
         print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스
         print(title.get())
         print(author.get())
@@ -189,17 +203,25 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         print(link.get("1.0","end"+"-1c"))
         print(publisher.get())
         print(text.get("1.0","end"+"-1c"))
+        print(photo.cget('text'))
+
+        self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() + "관련링크 : " + link.get("1.0","end"+"-1c")\
+                        + "\n" + "ISBN : " + ISBN.get()+ "\n" + "사진 : " + photo.cget('text')+ "\n" + "설명 : " + text.get("1.0","end"+"-1c")+ "\n"
         
         df1 = pd.read_csv ('book3.csv', dtype=str)
         num = int(len(df1))
         print(num)
-        df1.loc[num] = [title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c")]
+
+        df1.loc[num] = [title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text')]
+
+
         df1.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
 
 
     def on_closing(self):
-        self.Book_register.iconify()
-        if messagebox.askokcancel("등록", "정말 등록하시겠습니까? "):
+        self.Book_register.attributes('-topmost', 'false')
+        #self.Book_register.option_add('*Dialog.msg.font', 'Helvetica 40')
+        if messagebox.askokcancel("등록", self.addtext + "정말 등록하시겠습니까? "):
             df3 = pd.read_csv ('book3.csv')
             df3_list = df3.values.tolist()
             c = 1
@@ -213,7 +235,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             self.Book_register.destroy()
             #self.self.Book_register.protocol("WM_DELETE_WINDOW", on_closing)
         else:
-            self.Book_register.deiconify()
+            #self.Book_register.deiconify()
             self.Book_register.lift()
             print("존재")
 
@@ -231,7 +253,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             treeviewValues = self.Treeview1.item(aaa).get('values')
             for k in self.df1_list:
                 if treeviewValues[0] == k[0]  :
-                    bookinfo.bookInfo(k[0], k[1], k[6], k[2], k[5], k[3], k[4], k[7])
+                    bookinfo.bookInfo(k[0], k[1], k[6], k[2], k[5], k[3], k[4], k[7], k[8])
         except IndexError:
             messagebox.showinfo("알림", "도서를 클릭해주세요.")
             print("도서를 클릭해주세요. ")
@@ -357,7 +379,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
                 print(k[0])
                 if treeviewValues[3] == k[0]  :
                     gen = self.gender1(k[3])
-                    userinfo.userInfo(k[1], k[2], k[0], gen, k[4], k[3], k[5], k[6])
+                    userinfo.userInfo(k[1], k[2], k[0], gen, k[4], k[3], k[5], k[6], k[8])
         except IndexError:
             messagebox.showinfo("알림", "회원를 클릭해주세요.")
             print("회원를 클릭해주세요. ")
