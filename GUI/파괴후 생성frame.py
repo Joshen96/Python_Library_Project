@@ -323,7 +323,10 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         df1 = pd.read_csv ('book3.csv', dtype=str)
         num = int(len(df1))
         print(num)
+
         df1.loc[num] = [title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text')]
+
+
         df1.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
 
 
