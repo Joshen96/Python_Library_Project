@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+import webbrowser
+
 def bookInfo(title, author, publisher, price, link, ISBN, rental, bookdescription, photo):  # 나중에 이미지 이름도 인자로 받아와야함!
     win1=Toplevel()
     win1.title('도서 정보')    
@@ -50,8 +52,9 @@ def bookInfo(title, author, publisher, price, link, ISBN, rental, bookdescriptio
     labelLink.grid(row=4, column=0, columnspan=1, rowspan=1, sticky=W)
 
     # 관련 링크 넣는 곳
-    labelLinkText=Label(frame1, text= link, wraplength= 250 ) # wraplength : 자동 줄내림 설정
+    labelLinkText=Label(frame1, text= link, wraplength= 250, fg="blue", cursor="hand2" ) # wraplength : 자동 줄내림 설정
     labelLinkText.grid(row=4, column=1, columnspan=1, rowspan=1, sticky=W)
+    labelLinkText.bind("<Button-1>", lambda e: webbrowser.open_new(link))
 
     # ISBN 넣는 곳
     labelISBN=Label(frame1, text='ISBN : ')
