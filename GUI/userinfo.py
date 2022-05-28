@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-def userInfo(name, birth, phonnumber, gender, email, 대여권수, createdate, deletecount):  # 나중에 이미지 이름도 인자로 받아와야함!
+def userInfo(name, birth, phonnumber, gender, email, 대여권수, createdate, deletecount, photo):  # 나중에 이미지 이름도 인자로 받아와야함!
     win1=Toplevel()
     win1.title('회원 정보')    
     win1.geometry("+680+280")  #
@@ -17,7 +17,7 @@ def userInfo(name, birth, phonnumber, gender, email, 대여권수, createdate, d
     labelnameText.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=W)
 
     # 이미지 넣는 곳
-    img=PhotoImage(file='cat11.gif', master=win1) # 나중에 이미지이름 인자로 받아와야함!
+    img=PhotoImage(file='GIF/' + photo, master=win1) # 나중에 이미지이름 인자로 받아와야함!
     labelImg=Label(frame1, text='이미지 넣는 곳', image=img)
     labelImg.grid(row=0, column=3, columnspan=1, rowspan=6, sticky=E, padx=5)
 
