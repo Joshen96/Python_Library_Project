@@ -94,6 +94,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         self.Treeview1.column('#6', width=180, minwidth=150, stretch=NO)
         self.Treeview1.heading('#6',text='URL',anchor=N)
 
+
         c = 1
         # 표에 데이터 삽입
         for i in self.df1_list:
@@ -115,12 +116,14 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         btnBookInformation.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=W, padx=5, pady=3)
 
         # 도서수정 버튼
-        btnBookEdit=ttk.Button(self, text='도서수정',command=lambda: self.info_and_edit('edit'))
+        btnBookEdit=ttk.Button(self, text='도서수정', command=lambda: self.info_and_edit('edit'))
         btnBookEdit.grid(row=3, column=2, columnspan=1, rowspan=1, sticky=W, padx=25, pady=3)
 
         # 도서 삭제 버튼
         btnBookDelete=ttk.Button(self, text='도서 삭제',command=() ) 
         btnBookDelete.grid(row=3, column=4, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
+
+        
 
     
     ################### 도서 등록 #####################
@@ -186,14 +189,16 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         file_open_btn.place(x = 320 ,y = 270)
         save_btn.place(x=200, y= 390)
 
-        
-    ################### 도서 수정 #####################
+    
+    
+
+    ######################################## 도서 수정 ##########################################
     def bookEdit(self, title, author, publisher, price, link, ISBN, photo, bookdescription):
         self.window = Toplevel()
         self.window.title("도서수정")
         self.window.geometry("400x450+740+270")
         self.window.resizable(0,0)
-
+        
         # 제목 수정
         label_title = Label(self.window, text="제목 : ")
         label_title.grid(row=0, column=0, pady=4)
@@ -237,11 +242,10 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         e_isbn.insert(0, ISBN)
 
         # 사진 수정
-        label_pic = Label(self.window, text="사진 : ")
-        label_pic.grid(row=6, column=0, pady=4)
+        self.label_pic = Label(self.window, text="사진 : ")
+        self.label_pic.grid(row=6, column=0, pady=4)
 
-        self.book_photo_label2 = Label(self.window, text = "파일 열기를 통해 사진을 추가하세요. ", wraplength=350)
-        self.book_photo_label2.config(text= photo)
+        self.book_photo_label2 = Label(self.window, text = photo, wraplength=350)
 
         btn_pic = Button(self.window, text="파일 열기", bg="#0099ff", fg="white", command = lambda : self.fileadd('edit'))
         btn_pic.grid(row=6,column=2, padx=8)
@@ -252,10 +256,12 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         t_explain.grid(row=7, column=1, pady=4)
         t_explain.insert(tk.END, bookdescription) 
 
-        btn_edit = Button(self.window, text="수정하기", bg="#0099ff", fg="white")
-        btn_edit.grid(row=8,column=0, pady=4)
+        btn_edit = Button(self.window, text="수정하기", bg="#0099ff", fg="white", command = lambda :self.edit(e_title, e_author, e_publish,\
+        t_link, e_isbn, self.book_photo_label2, t_explain, e_price) )
 
-        btn_cancel = Button(self.window, text="취소", bg="#0099ff", fg="white")
+        btn_edit.grid(row=8,column=0, pady=4) # title, author, publisher, link, ISBN, photo, text, price
+
+        btn_cancel = Button(self.window, text="취소", bg="#0099ff", fg="white", command=())
         btn_cancel.grid(row=8,column=1, pady=4)
 
         # 도서수정 레이블 적용
@@ -265,7 +271,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         label_price.place(x=15,y=140)
         label_link.place(x=15,y=190)
         label_isbn.place(x=15,y=230)
-        label_pic.place(x=15,y=270)
+        self.label_pic.place(x=15,y=270)
         label_explain.place(x=15,y=310)
 
         # 도서수정 텍스트 적용
@@ -287,6 +293,53 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
 
         self.window.mainloop()
 
+
+    def edit(self, title, author, publisher, link, ISBN, photo, text, price):
+        self.df1 = pd.read_csv ('book3.csv')
+        self.df1_list = self.df1.values.tolist()
+        print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스
+        print(title.get())
+        print(author.get())
+        print(price.get())
+        print(ISBN.get())
+        rentcheck = 0
+        print(link.get("1.0","end"+"-1c"))
+        print(publisher.get())
+        print(text.get("1.0","end"+"-1c"))
+        print(photo.cget('text'))
+
+
+        aaa = self.Treeview1.focus() # 트리뷰 클릭한 줄
+        treeviewValues = self.Treeview1.item(aaa).get('values')
+        isbn = []
+        for k in self.df1_list:
+            if k[3] != treeviewValues[3]:
+                isbn.append(k[3])
+
+        print("########")
+        #print(isbn)
+        print("#########")
+        #isbn.remove(str(treeviewValues[3]))
+
+        print(treeviewValues[3])
+        print("@@@@@@")
+        print(ISBN.get())
+        print("@@@@@@")
+        print("@@@@@@")
+        if ISBN.get() in isbn:
+            messagebox.showinfo("중복", "ISBN을 확인해주세요. ")
+            print("ISBN중복")
+            self.window.lift()
+        else :
+            a = treeviewValues[3]
+            print(self.df1.index[self.df1['ISBN'] == a].tolist())
+            b = self.df1.index[self.df1['ISBN'] == a]
+            print("b : ")
+            print(b)
+            self.df1.loc[b] = (title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text'))
+            self.df1.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+            print("발견")
+            
     
     def fileadd(self, key):  # 파일 열기로 이미지 추가 함수  (나중에 예외 처리해야함 )
         if key == 'add':
@@ -302,7 +355,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             path = self.filename
             path_list = path.split('/')
             fn = path_list[-1]   # 파일명만 출력하기
-            self.book_photo_label2.configure(text= fn)
+            self.label_pic.configure(text= fn)
             self.window.lift()
 
     def registbook(self, title, author, publisher, link, ISBN, photo, text, price ):
@@ -335,7 +388,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
                         + "\n" + "ISBN : " + ISBN.get()+ "\n" + "사진 : " + photo.cget('text')+ "\n" + "설명 : " + text.get("1.0","end"+"-1c")+ "\n"
         if messagebox.askyesno("등록", self.addtext + "정말 등록하시겠습니까? "):
             print("메시지박스 예스 일때 : ")
-            print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스
+            print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스#####
             print(title.get())
             print(author.get())
             print(price.get())
@@ -366,7 +419,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             self.Book_register.lift()
             print("존재")
 
-
+    
     ######## 도서정보, 수정 함수 ########
     def info_and_edit(self, key): 
         print(key)
