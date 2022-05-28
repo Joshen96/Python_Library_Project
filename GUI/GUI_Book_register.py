@@ -73,7 +73,7 @@ class tt():
 
 
     def on_closing(self):
-        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        if messagebox.askokcancel("sd", "sdsd"):
             self.Book_register.destroy()
             self.parent.update()
             #self.self.Book_register.protocol("WM_DELETE_WINDOW", on_closing)
