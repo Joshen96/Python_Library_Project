@@ -47,7 +47,7 @@ class MainTk(tk.Tk):
 
 class BookPage(tk.Frame):  #### 전체 도서 페이지 
     def __init__(self, master):
-        self.df1 = pd.read_csv ('book3.csv')
+        self.df1 = pd.read_csv ('book3.csv', dtype=str)
         self.df1_list = self.df1.values.tolist()
 
         tk.Frame.__init__(self, master)
@@ -120,7 +120,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         btnBookEdit.grid(row=3, column=2, columnspan=1, rowspan=1, sticky=W, padx=25, pady=3)
 
         # 도서 삭제 버튼
-        btnBookDelete=ttk.Button(self, text='도서 삭제',command=() ) 
+        btnBookDelete=ttk.Button(self, text='도서 삭제',command=lambda: self.bookDelete(master) ) 
         btnBookDelete.grid(row=3, column=4, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
 
         
@@ -189,7 +189,53 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         file_open_btn.place(x = 320 ,y = 270)
         save_btn.place(x=200, y= 390)
 
-    
+        self.Book_register.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
+
+    ##### 창 닫힐때 메인위도우 새로고침 ##### 
+    def on_closing(self):
+        df14 = pd.read_csv ('book3.csv', dtype=str)
+        df14_list = df14.values.tolist()
+
+        c = 1
+        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            self.Treeview1.delete(i)        
+        for e in df14_list:
+            # 표에 데이터 삽입
+            self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+            c += 1
+        self.Book_register.destroy()
+
+    ######################################## 도서 삭제 ##########################################
+    def bookDelete(self, master):
+        print("삭제 함수")
+        df12 = pd.read_csv ('book3.csv', dtype=str)
+        bbb = self.Treeview1.focus()
+        treeviewValues = self.Treeview1.item(bbb).get('values')
+        if messagebox.askyesno("삭제", "정말 삭제하시겠습니까? "):
+            if str(treeviewValues[4]) == '0':
+                isbn = str(treeviewValues[3])  # treeviewValues[3] = <class 'int'>
+                b = df12.index[df12['Book_ISBN'] == isbn].tolist()
+                print(str(treeviewValues[3]) )
+                print(isbn)
+                print(df12['Book_ISBN']== isbn)
+                print(b)
+                df13 = df12.drop(index=b[0], inplace=False)
+                print(df13)
+                df13.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+
+                df14 = pd.read_csv ('book3.csv', dtype=str)
+                df14_list = df14.values.tolist()
+                c = 1
+                for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                    self.Treeview1.delete(i)        
+                for e in df14_list:
+                    # 표에 데이터 삽입
+                    self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                    c += 1
+            else :
+                messagebox.showinfo("도서삭제 실패", "반납하지 않은 도서가 있습니다.")
+        
     
 
     ######################################## 도서 수정 ##########################################
@@ -294,6 +340,19 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         self.window.mainloop()
 
 
+
+    ### 메인창 새로고침 함수#####
+    def reupdate(self):
+        df12 = pd.read_csv ('book3.csv', dtype=str)
+        df12_list = df12.values.tolist()
+        c = 1
+        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            self.Treeview1.delete(i)        
+        for e in df12_list:
+            # 표에 데이터 삽입
+            self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+            c += 1
+
     def edit(self, title, author, publisher, link, ISBN, photo, text, price):
         df12 = pd.read_csv ('book3.csv', dtype=str)
         df12_list = df12.values.tolist()
@@ -320,7 +379,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
                 print("일치")
                 isbn.append(k[3])
 
-        print(df12['ISBN'] == '9788975504773111111111111111')
+        print(df12['Book_ISBN'] == '9788975504773111111111111111')
 
         print("########")
         print(f'csv에 있는 ISBN 목록 : {isbn}')
@@ -340,14 +399,19 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         else :
             a = str(treeviewValues[3])  # <class 'int'>
             print(a)
-            print(df12.index[df12['ISBN'] == a].tolist())
-            b = df12.index[df12['ISBN'] == a].tolist()
+            print(df12.index[df12['Book_ISBN'] == a].tolist())
+            b = df12.index[df12['Book_ISBN'] == a].tolist()
             
             print("b : ")
             print(b[0])
             df12.loc[b[0]] = (title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text'))
             df12.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
             print("발견")
+            self.window.destroy()
+            self.reupdate()
+
+
+            
             
     
     def fileadd(self, key):  # 파일 열기로 이미지 추가 함수  (나중에 예외 처리해야함 )
@@ -367,6 +431,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             self.label_pic.configure(text= fn)
             self.window.lift()
 
+    ######################################## 도서 등록 ##########################################
     def registbook(self, title, author, publisher, link, ISBN, photo, text, price ):
         print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스
         print(title.get())
@@ -562,6 +627,19 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         # 회원삭제 버튼
         btnBookDelete=ttk.Button(self, text='회원 삭제',command=() )
         btnBookDelete.grid(row=3, column=4, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
+
+
+    ### 메인창 새로고침 함수#####
+    def userupdate(self):
+        df12 = pd.read_csv ('user.csv', dtype=str)
+        df12_list = df12.values.tolist()
+        c = 1
+        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            self.Treeview1.delete(i)        
+        for e in df12_list:
+            # 표에 데이터 삽입
+            self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+            c += 1
 
     def userinfo(self): # 트리뷰 클릭한 값 넘기기
         try: # 도서 클릭안하고 도서정보 버튼 눌렀을 경우 예외처리 
