@@ -208,34 +208,39 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
 
     ######################################## 도서 삭제 ##########################################
     def bookDelete(self, master):
+        # 도서 클릭안하고 도서정보 버튼 눌렀을 경우 예외처리               
         print("삭제 함수")
         df12 = pd.read_csv ('book3.csv', dtype=str)
         bbb = self.Treeview1.focus()
         treeviewValues = self.Treeview1.item(bbb).get('values')
-        if messagebox.askyesno("삭제", "정말 삭제하시겠습니까? "):
-            if str(treeviewValues[4]) == '0':
-                isbn = str(treeviewValues[3])  # treeviewValues[3] = <class 'int'>
-                b = df12.index[df12['Book_ISBN'] == isbn].tolist()
-                print(str(treeviewValues[3]) )
-                print(isbn)
-                print(df12['Book_ISBN']== isbn)
-                print(b)
-                df13 = df12.drop(index=b[0], inplace=False)
-                print(df13)
-                df13.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+        if treeviewValues == '':
+            messagebox.showinfo("알림", "도서를 클릭해주세요.")
+            print("도서를 클릭해주세요. ")
+        else :
+            if messagebox.askyesno("삭제", "정말 삭제하시겠습니까? "):
+                if str(treeviewValues[4]) == '0':
+                    isbn = str(treeviewValues[3])  # treeviewValues[3] = <class 'int'>
+                    b = df12.index[df12['Book_ISBN'] == isbn].tolist()
+                    print(str(treeviewValues[3]) )
+                    print(isbn)
+                    print(df12['Book_ISBN']== isbn)
+                    print(b)
+                    df13 = df12.drop(index=b[0], inplace=False)
+                    print(df13)
+                    df13.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
 
-                df14 = pd.read_csv ('book3.csv', dtype=str)
-                df14_list = df14.values.tolist()
-                c = 1
-                for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
-                    self.Treeview1.delete(i)        
-                for e in df14_list:
-                    # 표에 데이터 삽입
-                    self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
-                    c += 1
-            else :
-                messagebox.showinfo("도서삭제 실패", "반납하지 않은 도서가 있습니다.")
-        
+                    df14 = pd.read_csv ('book3.csv', dtype=str)
+                    df14_list = df14.values.tolist()
+                    c = 1
+                    for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                        self.Treeview1.delete(i)        
+                    for e in df14_list:
+                        # 표에 데이터 삽입
+                        self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                        c += 1
+                else :
+                    messagebox.showinfo("도서삭제 실패", "반납하지 않은 도서가 있습니다.")
+
     
 
     ######################################## 도서 수정 ##########################################
@@ -519,6 +524,8 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
                 messagebox.showinfo("알림", "도서를 클릭해주세요.")
                 print("도서를 클릭해주세요. ")
 
+        
+
     def bookSearch(self):  # 도서 검색
         searchText = self.entryValue.get() # 검색창 값 가져오기
         print(searchText)
@@ -613,7 +620,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         btnSearch.grid(row=1, column=3, columnspan=1, rowspan=1, sticky=N, padx=5)
 
         # 회원등록 버튼
-        btnBookRegist=ttk.Button(self, text='회원등록',command=())
+        btnBookRegist=ttk.Button(self, text='회원등록',command=lambda: self.useradd())
         btnBookRegist.grid(row=3, column=0, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
 
         # 회원정보 버튼
@@ -628,6 +635,198 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         btnBookDelete=ttk.Button(self, text='회원 삭제',command=() )
         btnBookDelete.grid(row=3, column=4, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
 
+    
+
+    def User_add_file(self) : # 사진 파일 열기 버튼 눌렀을 때
+        self.User_add_photo = filedialog.askopenfilename(initialdir="./gif", title = "이미지 파일을 선택하세요",\
+        filetypes=(('gif files','*.gif'), ("모든 파일","*.*"))) # 최초의 경로를 c 드라이브로 설정
+        #self.User_add_photoEntry.insert(END, self.self.User_add_photo) # 사진 파일을 선택 했을 때 엔트리에 주소 넣음
+        path = self.User_add_photo
+        print(path)
+        path_list = path.split('/')
+        fn = path_list[-1]   # 파일명만 출력하기
+        self.User_add_photoLabel2.configure(text=fn)
+        print(fn)
+        self.User_add.lift()
+
+    def User_add_save(self, phone_number, name, birth_year, birth_month, birth_day, gender, email, photo): ### 유저등록 여기부터 시작 
+        print("년도")
+        print(self.User_add_yearCombobox.get())
+        print(birth_year.get())
+        birth = self.User_add_yearCombobox.get() + "-" + self.User_add_monthCombobox.get() + "-" + self.User_add_dayCombobox.get()
+        gen = '남성'
+        if gender == 0 : 
+            gen = '여성'
+        self.addtext = "이름 : " + self.User_add_nameEntry.get()+ "\n" + "생년월일 : " + birth + "\n" + "성별 : " + gen + "\n"+ "전화번호 : " + phone_number.get() + "이메일 주소 : " + email.get()\
+                        + "\n" + "사진 : " + photo.cget('text')+ "\n"
+        print(self.addtext)
+        if messagebox.askyesno("등록", self.addtext + "정말 등록하시겠습니까? "):
+            print("메시지박스 예스 일때 : ")
+            print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스#####
+            #print(phone_number.get())
+            #print(name.get())
+            #print(birth)
+            #print(gen)
+            #rentcheck = 0
+            #print(link.get("1.0","end"+"-1c"))
+            #print(publisher.get())
+            #print(text.get("1.0","end"+"-1c"))
+            print(photo.cget('text'))
+           # df1 = pd.read_csv ('book3.csv', dtype=str)
+            #num = int(len(df1))
+            #print(num)
+            #df1.loc[num] = [title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text')]
+            #df1.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+            
+            #df1_list = df1.values.tolist()
+            c = 1
+            #for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            #    self.Treeview1.delete(i)        
+            #for e in df1_list:
+            #    # 표에 데이터 삽입
+            #    self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+            #    c += 1
+            #self.User_add.destroy()
+            #self.self.User_add.protocol("WM_DELETE_WINDOW", saveCheck)
+        #else:
+            #self.User_add.deiconify()
+            #self.User_add.lift()
+            #print("존재")
+
+    def daychange() : # 생년월일 월에따른 일 수
+        pass
+
+    def useradd(self):
+        self.User_add=Toplevel()
+        self.User_add.title('회원 등록')
+        self.User_add.geometry("460x350+720+290")
+        self.User_add.resizable(False, False)
+
+        # 이름 프레임
+        self.User_add_nameFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20 , pady = 20)
+        self.User_add_nameFrame.grid(row=0, column=0, sticky=W)
+        # 이름 레이블
+        self.User_add_nameLabel=Label(self.User_add_nameFrame, text='이 름 :', width= 10)
+        self.User_add_nameLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+        # 이름 엔트리
+        self.User_add_nameEntry=ttk.Entry(self.User_add_nameFrame ,width='30')
+        self.User_add_nameEntry.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N)
+
+
+        # 생년월일 프레임
+        self.User_add_birthFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20)
+        self.User_add_birthFrame.grid(row=1, column=0, sticky=W)
+        # 생년월일 레이블 ( 생년월일 : )
+        self.User_add_birthLabel=Label(self.User_add_birthFrame, text='생년월일 :', width= 10)
+        self.User_add_birthLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+        #생년월일 년도 콤보박스 ( OO년 )
+        years = list(range(1950,2023))
+        self.User_add_yearCombobox=ttk.Combobox(self.User_add_birthFrame, values = years, width=5)
+        self.User_add_yearCombobox.current(0)
+        self.User_add_yearCombobox.grid(row=0, column=1, sticky=W, padx =2)
+        # 생년월일 년 레이블 ( OO년 )
+        self.User_add_yearLabel=Label(self.User_add_birthFrame, text='년')
+        self.User_add_yearLabel.grid(row=0, column=2, sticky=W, padx =2)
+        # 생년월일 월 콤보박스 ( OO월 )
+        month = list(range(1,13))
+        self.User_add_monthCombobox=ttk.Combobox(self.User_add_birthFrame, values = month, width=3)
+        self.User_add_monthCombobox.current(0)
+        self.User_add_monthCombobox.grid(row=0, column=3, sticky=W, padx =2)
+        # 생년월일 월 레이블 ( OO월 )
+        self.User_add_monthLabel=Label(self.User_add_birthFrame, text='월')
+        self.User_add_monthLabel.grid(row=0, column=4, columnspan=1, rowspan=1, sticky=N, padx =2)
+        # 생년월일 일 콤보박스 ( OO일 )
+        days = list(range(1,32))
+        self.User_add_dayCombobox=ttk.Combobox(self.User_add_birthFrame, values = days, width=3)
+        self.User_add_dayCombobox.current(0)
+        self.User_add_dayCombobox.grid(row=0, column=5, sticky=W, padx =2)
+        # 생년월일 월 레이블 ( OO월 )
+        self.User_add_dayCombobox2=Label(self.User_add_birthFrame, text='일')
+        self.User_add_dayCombobox2.grid(row=0, column=6, columnspan=1, rowspan=1, sticky=N, padx =2)
+
+        # 성별 프레임
+        self.User_add_sexFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20, pady=20)
+        self.User_add_sexFrame.grid(row=2, column=0, sticky=W)
+        # 성별 레이블
+        self.User_add_sexLabel=Label(self.User_add_sexFrame, text='성별 :', width= 10)
+        self.User_add_sexLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+        # 성별 라디오 버튼
+        sexcheck = IntVar()
+        sexcheck.set('1') # 라디오 버튼 기본값 남자로 설정
+        self.User_add_manBtn=Radiobutton(self.User_add_sexFrame, text='남자', value = '1', variable = sexcheck) # 남자 체크시 sexcheck에 1 저장
+        self.User_add_manBtn.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N)
+        self.User_add_womanBtn=Radiobutton(self.User_add_sexFrame, text='여자', value = '2', variable = sexcheck)# 여자 체크시 sexcheck에 2 저장
+        self.User_add_womanBtn.grid(row=0, column=2, columnspan=1, rowspan=1, sticky=N)
+
+
+        # 메인 프레임
+        self.User_add_mainFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20)
+        self.User_add_mainFrame.grid(row=3, column=0, sticky=W)
+
+        # 휴대전화 레이블
+        self.User_add_phoneLabel=Label(self.User_add_mainFrame, text='휴대전화 :', width= 10)
+        self.User_add_phoneLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        # 휴대전화 엔트리
+        self.User_add_phoneEntry=ttk.Entry(self.User_add_mainFrame ,width='30')
+        self.User_add_phoneEntry.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 이메일 주소 레이블
+        self.User_add_emailLabel=Label(self.User_add_mainFrame, text='이메일 주소 :', width= 10)
+        self.User_add_emailLabel.grid(row=1, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        # 이메일 주소 엔트리
+        self.User_add_emailEntry=ttk.Entry(self.User_add_mainFrame ,width='30')
+        self.User_add_emailEntry.grid(row=1, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 사진 레이블
+        self.User_add_photoLabel=Label(self.User_add_mainFrame, text='사진', width= 10)
+        self.User_add_photoLabel.grid(row=2, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        self.User_add_photoLabel2=Label(self.User_add_mainFrame, text=' ', width= 10)
+        self.User_add_photoLabel2.grid(row=2, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 사진 엔트리
+        #self.User_add_photoEntry=ttk.Entry(self.User_add_mainFrame ,width='30')
+       # self.User_add_photoEntry.grid(row=2, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 사진 파일 열기 버튼
+        self.User_add_fileBtn=ttk.Button(self.User_add_mainFrame,text='파일 열기', command=lambda: self.User_add_file() )
+        self.User_add_fileBtn.grid(row=2, column=2, columnspan=1, rowspan=1, sticky=N, padx = 5, pady =6)
+
+        # 저장 버튼
+        self.User_add_saveBtn=ttk.Button(self.User_add_mainFrame,text='저장', command = lambda : self.User_add_save(self.User_add_phoneEntry, self.User_add_nameEntry, self.User_add_yearCombobox, \
+            self.User_add_monthCombobox, self.User_add_dayCombobox, sexcheck, self.User_add_emailEntry, self.User_add_photoLabel2))
+        self.User_add_saveBtn.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=N, pady =20)
+
+
+    ######################################## 유저 삭제 ##########################################
+    def bookDelete(self, master):
+        print("유저 삭제 함수")
+        df12 = pd.read_csv ('user.csv', dtype=str)
+        bbb = self.Treeview1.focus()
+        treeviewValues = self.Treeview1.item(bbb).get('values')
+        if messagebox.askyesno("삭제", "정말 삭제하시겠습니까? "):
+            if str(treeviewValues[4]) == '0':
+                isbn = str(treeviewValues[3])  # treeviewValues[3] = <class 'int'>
+                b = df12.index[df12['Book_ISBN'] == isbn].tolist()
+                print(str(treeviewValues[3]) )
+                print(isbn)
+                print(df12['Book_ISBN']== isbn)
+                print(b)
+                df13 = df12.drop(index=b[0], inplace=False)
+                print(df13)
+                df13.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+
+                df14 = pd.read_csv ('book3.csv', dtype=str)
+                df14_list = df14.values.tolist()
+                c = 1
+                for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                    self.Treeview1.delete(i)        
+                for e in df14_list:
+                    # 표에 데이터 삽입
+                    self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                    c += 1
+            else :
+                messagebox.showinfo("유저삭제 실패", "반납하지 않은 유저가 있습니다.")
 
     ### 메인창 새로고침 함수#####
     def userupdate(self):
