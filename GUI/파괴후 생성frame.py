@@ -295,8 +295,9 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
 
 
     def edit(self, title, author, publisher, link, ISBN, photo, text, price):
-        self.df1 = pd.read_csv ('book3.csv')
-        self.df1_list = self.df1.values.tolist()
+        df12 = pd.read_csv ('book3.csv', dtype=str)
+        df12_list = df12.values.tolist()
+
         print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스
         print(title.get())
         print(author.get())
@@ -312,12 +313,17 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         aaa = self.Treeview1.focus() # 트리뷰 클릭한 줄
         treeviewValues = self.Treeview1.item(aaa).get('values')
         isbn = []
-        for k in self.df1_list:
-            if k[3] != treeviewValues[3]:
+        for k in df12_list:
+            print(f'k : {type(k[3])}') # <class 'str'>
+            print(f'k : {type(treeviewValues[3])}') # <class 'int'>
+            if k[3] != str(treeviewValues[3]):  # 값은 같은데 일치하지않음
+                print("일치")
                 isbn.append(k[3])
 
+        print(df12['ISBN'] == '9788975504773111111111111111')
+
         print("########")
-        #print(isbn)
+        print(f'csv에 있는 ISBN 목록 : {isbn}')
         print("#########")
         #isbn.remove(str(treeviewValues[3]))
 
@@ -326,18 +332,21 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         print(ISBN.get())
         print("@@@@@@")
         print("@@@@@@")
+
         if ISBN.get() in isbn:
             messagebox.showinfo("중복", "ISBN을 확인해주세요. ")
             print("ISBN중복")
             self.window.lift()
         else :
-            a = treeviewValues[3]
-            print(self.df1.index[self.df1['ISBN'] == a].tolist())
-            b = self.df1.index[self.df1['ISBN'] == a]
+            a = str(treeviewValues[3])  # <class 'int'>
+            print(a)
+            print(df12.index[df12['ISBN'] == a].tolist())
+            b = df12.index[df12['ISBN'] == a].tolist()
+            
             print("b : ")
-            print(b)
-            self.df1.loc[b] = (title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text'))
-            self.df1.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+            print(b[0])
+            df12.loc[b[0]] = (title.get(), author.get(), price.get(), ISBN.get(), rentcheck, link.get("1.0","end"+"-1c"), publisher.get(), text.get("1.0","end"+"-1c"), photo.cget('text'))
+            df12.to_csv('book3.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
             print("발견")
             
     
