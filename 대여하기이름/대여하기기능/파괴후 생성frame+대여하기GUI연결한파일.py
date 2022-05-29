@@ -10,9 +10,24 @@ import tkinter as tk
 import pandas as pd 
 import bookinfo # 도서정보 py 불러오기
 import userinfo # 회원정보 py 불러오기
-import string
 
-df1 = pd.read_csv ('book.csv')
+## 조창현이 추가한 import
+import string
+from datetime import date
+import datetime
+import csv
+## 조창현이 추가한 import
+
+Rentdf = pd.DataFrame(index=range(0,0), columns=['SEQ', 'Book_ISBN','Book_title','User_number','User_name','Rent_date','Rent_retun','Rent_YN'])
+Rentdf.to_csv('Rent.csv',index=False,encoding='utf-8-sig') #csv파일 생성 최초실행
+########################################################################################
+
+
+
+
+
+
+df1 = pd.read_csv ('book3.csv')
 df1_list = df1.values.tolist()
 
     #win.update()
@@ -56,7 +71,10 @@ class MainTk(tk.Tk):
 
 
 class BookPage(tk.Frame):  #### 전체 도서 페이지 
+    
     def __init__(self, master):
+        df1 = pd.read_csv ('book3.csv')
+        df1_list = df1.values.tolist()
         tk.Frame.__init__(self, master)
         self.grid()
         self.entryValue = tk.StringVar()
@@ -103,8 +121,8 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         c = 1
         # 표에 데이터 삽입
         for i in df1_list:
-            rent=self.rent1(i[7])
-            TreeviewText=self.Treeview1.insert("", END, text=c, values=(i[1], i[2], i[4], i[0], rent, i[5] ), iid= c-1)
+            rent=self.rent1(i[4])
+            TreeviewText=self.Treeview1.insert("", END, text=c, values=(i[0], i[1], i[2], i[3], rent, i[5] ), iid= c-1)
             c += 1
         self.Treeview1.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N)
 
@@ -112,7 +130,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         # 검색 버튼
         btnSearch=ttk.Button(self, text='검색', command=lambda: self.bookSearch() )
         btnSearch.grid(row=1, column=3, columnspan=1, rowspan=1, sticky=N, padx=5)
-
+        
         # 도서등록 버튼
         btnBookRegist=ttk.Button(self, text='도서등록',command=())
         btnBookRegist.grid(row=3, column=0, columnspan=1, rowspan=1, sticky=N, padx=25, pady=3)
@@ -142,6 +160,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             print("도서를 클릭해주세요. ")
 
     def bookSearch(self):  # 도서 검색
+        
         searchText = self.entryValue.get() # 검색창 값 가져오기
         print(searchText)
         cboxText = self.comboBox1.get() # 콤보박스 값 가져오기
@@ -155,14 +174,16 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             for e in df1_list:
                 if self.entryValue.get() in e[0]: # 제목과 부분일치할 경우 
                     # 표에 데이터 삽입
-                    TreeviewText=self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                    rent=self.rent1(e[4])
+                    TreeviewText=self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], rent, e[5] ), iid= c-1)
                     c += 1
         elif self.comboBox1.get() == '저자':
             c = 1
             for e in df1_list:
                 if self.entryValue.get() in e[1]: # 저자와 부분일치할 경우 
                     # 표에 데이터 삽입
-                    TreeviewText=self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+                    rent=self.rent1(e[4])
+                    TreeviewText=self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], rent, e[5] ), iid= c-1)
                     c += 1
 
     def keyEvent(self, event):  # 실시간 검색 기능
@@ -177,10 +198,13 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             elif r == 1: # 대여불가
                 rent = '대여불가'
             return rent
+
+
 class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    df2 = pd.read_csv ('user.csv')
-    df2_list = df2.values.tolist()
+    
     def __init__(self, master):
+        df2 = pd.read_csv ('user.csv')
+        df2_list= df2.values.tolist()
         tk.Frame.__init__(self, master)
         self.grid()
         self.entryValue = tk.StringVar()
@@ -228,7 +252,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
 
         c = 1
         # 표에 데이터 삽입
-        for i in self.df2_list:
+        for i in df2_list:
             gen = self.gender1(i[3])
             #rent = self.rent1(i[7])
             cUser = self.currentUser(i[6])
@@ -359,24 +383,15 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
 
 
 class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
-
-
-    df2 = pd.read_csv ('user.csv')
-
-    df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ")
-    df2_rent_can_user_list = df2_rent_can_user.values.tolist()
-    def gender1(self, g):
-        gen =''
-        if g == 0: # 여성
-
-            gen = '여성'
-
-        elif g == 1: # 남성
-            gen = '남성'
-        return gen
+    global df2
+    
     
     def __init__(self, master):
-        
+        df2 = pd.read_csv ('user.csv') ## 회원정보 받아오기
+
+        df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ") # 탈퇴한 회원은 못빌리도록 미리 빼둠
+        df2_rent_can_user_list = df2_rent_can_user.values.tolist() 
+
         tk.Frame.__init__(self, master)
         tk.Frame.configure(self, relief='flat', borderwidth=1, pady=5)
         
@@ -424,7 +439,7 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
         self.name_treeview.heading('#7',text='이메일주소',anchor=N)
         c=1
         #m20aa1=self.name_treeview.insert("", END, text='', values=('', '', '', '', '', ''))
-        for i in self.df2_rent_can_user_list:
+        for i in df2_rent_can_user_list:
             gen = self.gender1(i[3])
             #rent = self.i[7]
             cUser = self.currentUser(i[6])
@@ -451,6 +466,16 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
         new_frame = frame_class
         self._frame= new_frame
 
+    def gender1(self, g):
+        gen =''
+        if g == 0: # 여성
+
+            gen = '여성'
+
+        elif g == 1: # 남성
+            gen = '남성'
+        return gen
+    
     def userselect(self): # 대여하기 트리뷰 선택후 대여하기 도서로 넘기기
         
         try: # 회원 클릭안하고 회원선택 버튼 눌렀을 경우 예외처리 
@@ -458,9 +483,8 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
             print(bbb)
             treeviewValues = self.name_treeview.item(bbb).get('values')
             print(treeviewValues[0])
-
             rentname=treeviewValues[0]
-            self.switch_frame(RentBook(self,rentname))
+            self.switch_frame(RentBook(self,rentname)) #  회원선택후 회원이름 가지고 도서대여창으로 넘기는 곳
 
         except IndexError:
             messagebox.showinfo("알림", "회원를 클릭해주세요\.")
@@ -476,19 +500,44 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
             cUser = '탈퇴회원'
         return cUser
 
+    def userupdate(self): ## 창 정보 최신화
+        df12 = pd.read_csv ('user.csv')
+        df12_list = df12.values.tolist()
+        c = 1
+        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            self.Treeview1.delete(i)        
+        for e in df12_list:
+            # 표에 데이터 삽입
+            self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
+            c += 1
 
-    
+
+
+
+
+
+
+df_user = pd.read_csv ('user.csv')
+df_book = pd.read_csv ('book3.csv') 
+df_rent = pd.read_csv('Rent.csv')
+
 class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
+    global df_book
+    global df_user
+    global df_rent
     
-    df_book = pd.read_csv ('book.csv')
     
-    df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
-    df_rent_can_book_list = df_rent_can_book.values.tolist()
     
-    df_user = pd.read_csv ('user.csv')
+    
+    
+    
+    def __init__(self, master, name): ## 선택회원 이름을 가지고옴
+        df_book = pd.read_csv ('book3.csv')
+        df_user = pd.read_csv ('user.csv')
+        df_rent = pd.read_csv('Rent.csv')
 
-    def __init__(self, master, name):
-       
+        df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
+        df_rent_can_book_list = df_rent_can_book.values.tolist()
         tk.Frame.__init__(self, master)
         tk.Frame.configure(self, relief='flat', borderwidth=1, pady=5)
         
@@ -516,35 +565,32 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
         treeview_frame=tk.Frame(self, relief='flat', borderwidth=1,padx=20,pady=10)
         treeview_frame.grid(row=2, column=0, columnspan=8, rowspan=1, sticky=N)
 
-        self.book_treeview=ttk.Treeview(treeview_frame, height=10, columns=('#1', '#2', '#3', '#4', '#5'))
+        self.book_treeview=ttk.Treeview(treeview_frame, height=10, columns=('#1', '#2', '#3', '#4', '#5','#6'))
 
-        self.book_treeview.column('#0', width=100, minwidth=100, stretch=NO)
-        self.book_treeview.heading('#0',text='도서명',anchor=N)
-        self.book_treeview.column('#1', width=120, minwidth=120, stretch=NO)
-        self.book_treeview.heading('#1',text='저자',anchor=N)
-        self.book_treeview.column('#2', width=100, minwidth=100, stretch=NO)
-        self.book_treeview.heading('#2',text='가격',anchor=N)
-        self.book_treeview.column('#3', width=120, minwidth=120, stretch=NO)
-        self.book_treeview.heading('#3',text='ISBN',anchor=N)
-        self.book_treeview.column('#4', width=100, minwidth=100, stretch=NO)
-        self.book_treeview.heading('#4',text='대출여부',anchor=N)
+        self.book_treeview.column('#0', width=40, minwidth=100, stretch=NO)
+        self.book_treeview.heading('#0',text='권수',anchor=N)
+        self.book_treeview.column('#1', width=100, minwidth=100, stretch=NO)
+        self.book_treeview.heading('#1',text='도서명',anchor=N)
+        self.book_treeview.column('#2', width=120, minwidth=120, stretch=NO)
+        self.book_treeview.heading('#2',text='저자',anchor=N)
+        self.book_treeview.column('#3', width=100, minwidth=100, stretch=NO)
+        self.book_treeview.heading('#3',text='가격',anchor=N)
+        self.book_treeview.column('#4', width=120, minwidth=120, stretch=NO)
+        self.book_treeview.heading('#4',text='ISBN',anchor=N)
         self.book_treeview.column('#5', width=100, minwidth=100, stretch=NO)
-        self.book_treeview.heading('#5',text='URL',anchor=N)
+        self.book_treeview.heading('#5',text='대출여부',anchor=N)
+        self.book_treeview.column('#6', width=100, minwidth=100, stretch=NO)
+        self.book_treeview.heading('#6',text='URL',anchor=N)
         c=1
         #m20aa1=self.name_treeview.insert("", END, text='', values=('', '', '', '', '', ''))
-        for i in self.df_rent_can_book_list:
-            rent=self.rent1(i[7])
-            m20aa1=self.book_treeview.insert("", END, text=c, values=(i[1], i[2], i[4], i[0], rent, i[5] ), iid= c-1)
+        for i in df_rent_can_book_list:
+            rent=self.rent1(i[4])
+            m20aa1=self.book_treeview.insert("", END, text=c, values=(i[0], i[1], i[2], i[3], rent, i[5] ), iid= c-1)
             c += 1
-
-
-    
 
         self.book_treeview.grid(row=2, column=0, columnspan=1, rowspan=1, sticky=N)
 
-
         #도서대여 버튼 
-        
             
         select_book_btn=ttk.Button(self,text='도서 대여',command=lambda:self.user_rent_book(name))  # 함수추가 하기
         select_book_btn.grid(row=3, column=0, columnspan=1, rowspan=1, sticky=N)
@@ -556,7 +602,10 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
         elif r == 1: # 대여불가
             rent = '대여불가'
         return rent
-    def user_rent_book(self,name): # 대여하기 트리뷰 선택후 대여하기 도서로 넘기기
+    
+
+    def user_rent_book(self,name): # 대여 함수 회원 대여수 증가 책 여부 
+        global df_rent
         try: # 도서 클릭안하고 도서대여 눌렀을 경우 예외처리 
             self.name=name
             bbb = self.book_treeview.focus() # 트리뷰 클릭한 줄
@@ -566,19 +615,51 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             rentname=self.name
             print(rentbook)
             print(rentname)
+            rentcount = int(df_user.loc[df_user['User_name'].str.contains(rentname),'User_rent_cnt']) # 선택 회원의 대여권수 뽑아오기
+            print(rentcount)
+            Name_index=df_user.index[df_user['User_name']==rentname] #랜트 한경우  회원의 대여수 증가 
+            df_user.loc[Name_index,'User_rent_cnt']=rentcount+1 
 
 
+            Title_index=df_book.index[df_book['Book_title']==rentbook]
+            df_book.loc[Title_index,'Book_pre']=1
+            
+           
 
+            ##여기까지 유저와 도서 정보저장
 
+            ##여기서부터 랜트 정보 생성
+            RentUser=df_user['User_number'].values[Name_index]     #해당 값의 전화번호
+            RentingName=df_user['User_name'].values[Name_index]    #해당 값의 이름
+            
+            RentBook=df_book['Book_ISBN'].values[Title_index]       #해당 도서의 ISBN
+            RentingTitle=df_book['Book_title'].values[Title_index]  #해당 도서의 이름
+            
+            RentUserNumber=RentUser[0]       # User_number 정보
+            RentUserName=RentingName[0]      # User_name 정보
+            RentBookISBN=RentBook[0]         # Book_ISBN 정보
+            RentBookTitle=RentingTitle[0]    # Book_title 정보
+            
+            Renttoday = date.today() # 빌리는 날짜     #시간추가
+            Returnday = Renttoday+datetime.timedelta(days=14) # 반납예정날짜
 
+            row=[RentBookISBN,RentBookTitle,RentUserNumber,RentUserName,Renttoday,Returnday,0] 
+            
+            df_rent.set_index('SEQ',inplace=True)
+            df_rent=df_rent.append(pd.Series(row, index=df_rent.columns),ignore_index =True)
+            df_rent.index.name='SEQ'
+            df_rent.reset_index(drop=False, inplace=True)                                    
+            
+          
+            df_rent.to_csv('Rent.csv',index=False,encoding='utf-8-sig') # 랜트 정보 csv 파일로 저장
+            df_book.to_csv('book3.csv',index=False,encoding='utf-8-sig') # 도서 랜트여부 여기서 저장
+            df_user.to_csv('user.csv',index=False,encoding='utf-8-sig') # 유저 랜트수 여기서 저장
+            
         except IndexError:
             messagebox.showinfo("알림", "도서를 클릭해주세요\.")
             print("도서를 클릭해주세요. ")
-
-
-
-
     
+
 
 
 
@@ -593,8 +674,10 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
 
 
 class RentInfo(tk.Frame):  ####  대여 전체 정보 페이지
+
     def __init__(self, master):
-        
+        Rentdf = pd.read_csv ('Rent.csv')
+        Rentdf_list = Rentdf.values.tolist()
         tk.Frame.__init__(self, master)
         tk.Frame.configure(self, relief='flat', borderwidth=1, pady=5)
         
@@ -613,26 +696,29 @@ class RentInfo(tk.Frame):  ####  대여 전체 정보 페이지
 
         self.rentinfo_treeview=ttk.Treeview(treeview_frame, height=10, columns=('#1', '#2', '#3', '#4', '#5','#6','#7'))
 
-        self.rentinfo_treeview.column('#0', width=100, minwidth=100, stretch=NO)
-        self.rentinfo_treeview.heading('#0',text='대여번호',anchor=N)
+        self.rentinfo_treeview.column('#0', width=40, minwidth=100, stretch=NO)
+        self.rentinfo_treeview.heading('#0',text='번호',anchor=N)
         self.rentinfo_treeview.column('#1', width=120, minwidth=120, stretch=NO)
-        self.rentinfo_treeview.heading('#1',text='회원정보',anchor=N)
+        self.rentinfo_treeview.heading('#1',text='ISBN',anchor=N)
         self.rentinfo_treeview.column('#2', width=100, minwidth=100, stretch=NO)
-        self.rentinfo_treeview.heading('#2',text='도서정보',anchor=N)
+        self.rentinfo_treeview.heading('#2',text='도서명',anchor=N)
         self.rentinfo_treeview.column('#3', width=120, minwidth=120, stretch=NO)
-        self.rentinfo_treeview.heading('#3',text='도서정보',anchor=N)
+        self.rentinfo_treeview.heading('#3',text='전화번호',anchor=N)
         self.rentinfo_treeview.column('#4', width=100, minwidth=100, stretch=NO)
-        self.rentinfo_treeview.heading('#4',text='도서명',anchor=N)
+        self.rentinfo_treeview.heading('#4',text='회원명',anchor=N)
         self.rentinfo_treeview.column('#5', width=100, minwidth=100, stretch=NO)
-        self.rentinfo_treeview.heading('#5',text='대여일',anchor=N)
+        self.rentinfo_treeview.heading('#5',text='대여시작',anchor=N)
         self.rentinfo_treeview.column('#6', width=100, minwidth=100, stretch=NO)
         self.rentinfo_treeview.heading('#6',text='반납예정일',anchor=N)
         self.rentinfo_treeview.column('#7', width=100, minwidth=100, stretch=NO)
         self.rentinfo_treeview.heading('#7',text='반납여부',anchor=N)
-        
+        c=1
+        for i in Rentdf_list:
+            m20aa1=self.rentinfo_treeview.insert("", END, text=c, values=(i[1], i[2], i[3], i[4], i[5], i[6] ,i[7]), iid= c-1)
+            c += 1
+            
 
-
-        m20aa1=self.rentinfo_treeview.insert("", END, text='', values=('', '', '', '', '','',''))
+       
 
         self.rentinfo_treeview.grid(row=2, column=0, columnspan=1, rowspan=1, sticky=N)
 
