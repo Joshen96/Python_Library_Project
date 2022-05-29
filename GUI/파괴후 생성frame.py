@@ -649,7 +649,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         print(fn)
         self.User_add.lift()
 
-    def User_add_save(self, phone_number, name, birth_year, birth_month, birth_day, gender, email, photo): ### 유저등록 여기부터 시작
+    def User_add_save(self, phone_number, name, birth_year, birth_month, birth_day, gender, email, photo): ### 유저등록 여기부터 시작 
         print("년도")
         print(self.User_add_yearCombobox.get())
         print(birth_year.get())
@@ -686,11 +686,11 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             #    # 표에 데이터 삽입
             #    self.Treeview1.insert("", END, text=c, values=(e[0], e[1], e[2], e[3], e[4], e[5] ), iid= c-1)
             #    c += 1
-            #self.Book_register.destroy()
-            #self.self.Book_register.protocol("WM_DELETE_WINDOW", saveCheck)
+            #self.User_add.destroy()
+            #self.self.User_add.protocol("WM_DELETE_WINDOW", saveCheck)
         #else:
-            #self.Book_register.deiconify()
-            #self.Book_register.lift()
+            #self.User_add.deiconify()
+            #self.User_add.lift()
             #print("존재")
 
     def daychange() : # 생년월일 월에따른 일 수
