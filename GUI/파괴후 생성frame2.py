@@ -1005,31 +1005,40 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
 
         print("폰 번호")
         print(ph_number)
-
-        if self.User_edit_phoneEntry.get() in ph_number:
-            messagebox.showinfo("중복", "전화번호를 확인해주세요. ")
-            print("전화번호 중복")
+        if self.User_edit_nameEntry.get() == '':
+            messagebox.showinfo("오류", "이름을 입력하세요. ")
+            self.User_edit.lift()
+        elif self.User_edit_phoneEntry.get() == '':
+            messagebox.showinfo("오류", "전화번호를 입력하세요. ")
+            self.User_edit.lift()
+        elif self.User_edit_emailEntry.get() == '':
+            messagebox.showinfo("오류", "이메일을 입력하세요. ")
             self.User_edit.lift()
         else :
-            a = str(treeviewValues[3])  # <class 'int'>
-            print(a)
-            print(df22.index[df22['User_number'] == a].tolist())
-            b = df22.index[df22['User_number'] == a].tolist()
-            
-            print("b : ")
-            print(b[0])
+            if self.User_edit_phoneEntry.get() in ph_number:
+                messagebox.showinfo("중복", "전화번호를 확인해주세요. ")
+                print("전화번호 중복")
+                self.User_edit.lift()
+            else :
+                a = str(treeviewValues[3])  # <class 'int'>
+                print(a)
+                print(df22.index[df22['User_number'] == a].tolist())
+                b = df22.index[df22['User_number'] == a].tolist()
+                
+                print("b : ")
+                print(b[0])
 
-            print(df22.loc[b[0], 'User_Reg_Date'])
-            print(df22.loc[b[0], 'User_out_Date'])
-            print(df22.loc[b[0], 'User_rent_cnt'])
+                print(df22.loc[b[0], 'User_Reg_Date'])
+                print(df22.loc[b[0], 'User_out_Date'])
+                print(df22.loc[b[0], 'User_rent_cnt'])
 
-            df22.loc[b[0]] = (self.User_edit_phoneEntry.get(), self.User_edit_nameEntry.get(), birth2, self.sexcheck2.get(), self.User_edit_emailEntry.get(), df22.loc[b[0], 'User_Reg_Date'] \
-                , df22.loc[b[0], 'User_out_Date'], df22.loc[b[0], 'User_rent_cnt'], self.User_edit_photoLabel2.cget('text'))
-            df22.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
-            print("발견")
-            
-            self.User_edit.destroy()
-            self.reupdate2()
+                df22.loc[b[0]] = (self.User_edit_phoneEntry.get(), self.User_edit_nameEntry.get(), birth2, self.sexcheck2.get(), self.User_edit_emailEntry.get(), df22.loc[b[0], 'User_Reg_Date'] \
+                    , df22.loc[b[0], 'User_out_Date'], df22.loc[b[0], 'User_rent_cnt'], self.User_edit_photoLabel2.cget('text'))
+                df22.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+                print("발견")
+                
+                self.User_edit.destroy()
+                self.reupdate2()
 
 
     ######################################## 유저 수정 ##########################################
