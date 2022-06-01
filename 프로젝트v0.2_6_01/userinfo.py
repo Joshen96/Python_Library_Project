@@ -70,7 +70,7 @@ def userInfo(name, birth, phonnumber, gender, email, 대여권수, createdate, d
     labelcreatedateText.grid(row=6, column=1, columnspan=1, rowspan=1, sticky=W)
 
     # 탈퇴여부 적는 곳
-    labeldeletecount=Label(frame1, text='탈퇴여부 : ')
+    labeldeletecount=Label(frame1, text='회원 현황 : ')
     labeldeletecount.grid(row=7, column=0, columnspan=1, rowspan=1, sticky=W)
 
     # 탈퇴여부 적는 곳
