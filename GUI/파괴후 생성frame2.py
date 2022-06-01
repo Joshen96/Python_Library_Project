@@ -681,7 +681,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         btnBookInformation.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=W, padx=5, pady=3)
 
         # 회원수정 버튼
-        btnBookEdit=ttk.Button(self, text='회원수정',command=())
+        btnBookEdit=ttk.Button(self, text='회원수정',command=lambda: self.userUpdate() )
         btnBookEdit.grid(row=3, column=2, columnspan=1, rowspan=1, sticky=W, padx=25, pady=3)
 
         # 회원삭제 버튼
@@ -762,7 +762,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
     def daychange() : # 생년월일 월에따른 일 수
         pass
 
-    def useradd(self):
+    def useradd(self):  ########### 회원등록 GUI ###########
         self.User_add=Toplevel()
         self.User_add.title('회원 등록')
         self.User_add.geometry("460x350+720+290")
@@ -777,7 +777,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         # 이름 엔트리
         self.User_add_nameEntry=ttk.Entry(self.User_add_nameFrame ,width='30')
         self.User_add_nameEntry.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N)
-
+        
 
         # 생년월일 프레임
         self.User_add_birthFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20)
@@ -824,8 +824,6 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         self.User_add_womanBtn=Radiobutton(self.User_add_sexFrame, text='여자', value = '0', variable = sexcheck)# 여자 체크시 sexcheck에 1 저장
         self.User_add_womanBtn.grid(row=0, column=2, columnspan=1, rowspan=1, sticky=N)
 
-        print(sexcheck.get())
-
         # 메인 프레임
         self.User_add_mainFrame=Frame(self.User_add, relief='flat', borderwidth=1, padx =20)
         self.User_add_mainFrame.grid(row=3, column=0, sticky=W)
@@ -863,6 +861,193 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         self.User_add_saveBtn=ttk.Button(self.User_add_mainFrame,text='저장', command = lambda : self.User_add_save(self.User_add_phoneEntry, self.User_add_nameEntry, self.User_add_yearCombobox, \
             self.User_add_monthCombobox, self.User_add_dayCombobox, sexcheck, self.User_add_emailEntry, self.User_add_photoLabel2))
         self.User_add_saveBtn.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=N, pady =20)
+
+         
+
+    def userup(self, name, birth, gen, phone, email, img): ########### 회원수정 GUI ###########
+        self.User_edit=Toplevel()
+        self.User_edit.title('회원 등록')
+        self.User_edit.geometry("460x350+720+290")
+        self.User_edit.resizable(False, False)
+
+        # 이름 프레임
+        self.User_edit_nameFrame=Frame(self.User_edit, relief='flat', borderwidth=1, padx =20 , pady = 20)
+        self.User_edit_nameFrame.grid(row=0, column=0, sticky=W)
+        # 이름 레이블
+        self.User_edit_nameLabel=Label(self.User_edit_nameFrame, text='이 름 :', width= 10)
+        self.User_edit_nameLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+        # 이름 엔트리
+        self.User_edit_nameEntry=ttk.Entry(self.User_edit_nameFrame ,width='30')
+        self.User_edit_nameEntry.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N)
+        self.User_edit_nameEntry.insert(0, name)
+
+        b_list = birth.split("-")
+        # 생년월일 프레임
+        self.User_edit_birthFrame=Frame(self.User_edit, relief='flat', borderwidth=1, padx =20)
+        self.User_edit_birthFrame.grid(row=1, column=0, sticky=W)
+        # 생년월일 레이블 ( 생년월일 : )
+        self.User_edit_birthLabel=Label(self.User_edit_birthFrame, text='생년월일 :', width= 10)
+        self.User_edit_birthLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+        #생년월일 년도 콤보박스 ( OO년 )
+        years = list(range(1950,2023))
+        self.User_edit_yearCombobox=ttk.Combobox(self.User_edit_birthFrame, values = years, width=5)
+        self.User_edit_yearCombobox.current(int(b_list[0]) - 1950)
+        self.User_edit_yearCombobox.grid(row=0, column=1, sticky=W, padx =2)
+
+        # 생년월일 년 레이블 ( OO년 )
+        self.User_edit_yearLabel=Label(self.User_edit_birthFrame, text='년')
+        self.User_edit_yearLabel.grid(row=0, column=2, sticky=W, padx =2)
+        # 생년월일 월 콤보박스 ( OO월 )
+        month = list(range(1,13))
+        self.User_edit_monthCombobox=ttk.Combobox(self.User_edit_birthFrame, values = month, width=3)
+        self.User_edit_monthCombobox.current(int(b_list[1]) - 1)
+        self.User_edit_monthCombobox.grid(row=0, column=3, sticky=W, padx =2)
+
+        # 생년월일 월 레이블 ( OO월 )
+        self.User_edit_monthLabel=Label(self.User_edit_birthFrame, text='월')
+        self.User_edit_monthLabel.grid(row=0, column=4, columnspan=1, rowspan=1, sticky=N, padx =2)
+        # 생년월일 일 콤보박스 ( OO일 )
+        days = list(range(1,32))
+        self.User_edit_dayCombobox=ttk.Combobox(self.User_edit_birthFrame, values = days, width=3)
+        self.User_edit_dayCombobox.current(int(b_list[2]) - 1)
+        self.User_edit_dayCombobox.grid(row=0, column=5, sticky=W, padx =2)
+
+        # 생년월일 월 레이블 ( OO월 )
+        self.User_edit_dayCombobox2=Label(self.User_edit_birthFrame, text='일')
+        self.User_edit_dayCombobox2.grid(row=0, column=6, columnspan=1, rowspan=1, sticky=N, padx =2)
+
+        # 성별 프레임
+        self.User_edit_sexFrame=Frame(self.User_edit, relief='flat', borderwidth=1, padx =20, pady=20)
+        self.User_edit_sexFrame.grid(row=2, column=0, sticky=W)
+        # 성별 레이블
+        self.User_edit_sexLabel=Label(self.User_edit_sexFrame, text='성별 :', width= 10)
+        self.User_edit_sexLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
+
+        # 성별 라디오 버튼
+        self.sexcheck2 = IntVar()
+        self.sexcheck2.set(gen) 
+        self.User_edit_manBtn=Radiobutton(self.User_edit_sexFrame, text='남자', value = '1', variable = self.sexcheck2) # 남자 체크시 sexcheck에 1 저장
+        self.User_edit_manBtn.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N)
+        self.User_edit_womanBtn=Radiobutton(self.User_edit_sexFrame, text='여자', value = '0', variable = self.sexcheck2)# 여자 체크시 sexcheck에 0 저장
+        self.User_edit_womanBtn.grid(row=0, column=2, columnspan=1, rowspan=1, sticky=N)
+
+        # 메인 프레임
+        self.User_edit_mainFrame=Frame(self.User_edit, relief='flat', borderwidth=1, padx =20)
+        self.User_edit_mainFrame.grid(row=3, column=0, sticky=W)
+
+        # 휴대전화 레이블
+        self.User_edit_phoneLabel=Label(self.User_edit_mainFrame, text='휴대전화 :', width= 10)
+        self.User_edit_phoneLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        # 휴대전화 엔트리
+        self.User_edit_phoneEntry=ttk.Entry(self.User_edit_mainFrame ,width='30')
+        self.User_edit_phoneEntry.grid(row=0, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        self.User_edit_phoneEntry.insert(0, phone)
+
+        # 이메일 주소 레이블
+        self.User_edit_emailLabel=Label(self.User_edit_mainFrame, text='이메일 주소 :', width= 10)
+        self.User_edit_emailLabel.grid(row=1, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        # 이메일 주소 엔트리
+        self.User_edit_emailEntry=ttk.Entry(self.User_edit_mainFrame ,width='30')
+        self.User_edit_emailEntry.grid(row=1, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+        self.User_edit_emailEntry.insert(0, email)
+
+        # 사진 레이블
+        self.User_edit_photoLabel=Label(self.User_edit_mainFrame, text='사진', width= 10)
+        self.User_edit_photoLabel.grid(row=2, column=0, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        self.User_edit_photoLabel2=Label(self.User_edit_mainFrame, text=img, width= 10)
+        self.User_edit_photoLabel2.grid(row=2, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 사진 엔트리
+        #self.User_edit_photoEntry=ttk.Entry(self.User_edit_mainFrame ,width='30')
+       # self.User_edit_photoEntry.grid(row=2, column=1, columnspan=1, rowspan=1, sticky=N, padx=10, pady=10)
+
+        # 사진 파일 열기 버튼
+        self.User_edit_fileBtn=ttk.Button(self.User_edit_mainFrame,text='파일 열기', command=lambda: self.User_add_file() )
+        self.User_edit_fileBtn.grid(row=2, column=2, columnspan=1, rowspan=1, sticky=N, padx = 5, pady =6)
+
+        # 저장 버튼
+        self.User_edit_saveBtn=ttk.Button(self.User_edit_mainFrame,text='저장', command = lambda : self.userEdit())
+        self.User_edit_saveBtn.grid(row=3, column=1, columnspan=1, rowspan=1, sticky=N, pady =20)
+
+
+    def reupdate2(self):
+        df12 = pd.read_csv ( 'user.csv', dtype=str )
+        df12_list = df12.values.tolist()
+        c = 1
+        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+            self.Treeview1.delete(i)        
+        for e in df12_list:
+            gen1 = self.gender1(str(e[3]))
+            self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen1, e[0], self.currentUser(e[6]), e[7], e[4] ), iid= c-1)
+            c += 1
+
+    ######################################## 유저 수정 저장 ##########################################
+    def userEdit(self):
+        birth2 = self.User_edit_yearCombobox.get() + "-" + self.User_edit_monthCombobox.get()+ "-" + self.User_edit_dayCombobox.get()
+        self.addtext = "이름 : " + self.User_edit_nameEntry.get()+ "\n" + "생년월일 : " + birth2 + "\n" + "성별 : " + str(self.sexcheck2.get()) + \
+            "\n"+ "전화번호 : " + self.User_edit_phoneEntry.get() + "\n" + "이메일 주소 : " + self.User_edit_emailEntry.get() + "\n" + "사진 : " + self.User_edit_photoLabel2.cget('text')+ "\n"
+            
+        print(self.addtext)
+        df22 = pd.read_csv ('user.csv',dtype= str)
+        df22_list = df22.values.tolist()
+
+        
+        aaa = self.Treeview1.focus() # 트리뷰 클릭한 줄
+        treeviewValues = self.Treeview1.item(aaa).get('values')
+        ph_number = []
+        for k in df22_list:
+            print(f'k : {type(k[0])}') # <class 'str'>
+            print(f'k : {type(treeviewValues[3])}') # <class 'int'>
+            if k[0] != str(treeviewValues[3]):  # 값은 같은데 일치하지않음
+                print("일치")
+                ph_number.append(k[0])
+
+        print("폰 번호")
+        print(ph_number)
+
+        if self.User_edit_phoneEntry.get() in ph_number:
+            messagebox.showinfo("중복", "전화번호를 확인해주세요. ")
+            print("전화번호 중복")
+            self.User_edit.lift()
+        else :
+            a = str(treeviewValues[3])  # <class 'int'>
+            print(a)
+            print(df22.index[df22['User_number'] == a].tolist())
+            b = df22.index[df22['User_number'] == a].tolist()
+            
+            print("b : ")
+            print(b[0])
+
+            print(df22.loc[b[0], 'User_Reg_Date'])
+            print(df22.loc[b[0], 'User_out_Date'])
+            print(df22.loc[b[0], 'User_rent_cnt'])
+
+            df22.loc[b[0]] = (self.User_edit_phoneEntry.get(), self.User_edit_nameEntry.get(), birth2, self.sexcheck2.get(), self.User_edit_emailEntry.get(), df22.loc[b[0], 'User_Reg_Date'] \
+                , df22.loc[b[0], 'User_out_Date'], df22.loc[b[0], 'User_rent_cnt'], self.User_edit_photoLabel2.cget('text'))
+            df22.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+            print("발견")
+            
+            self.User_edit.destroy()
+            self.reupdate2()
+
+
+    ######################################## 유저 수정 ##########################################
+    def userUpdate(self):
+        df15 = pd.read_csv ('user.csv', dtype=str)
+        df5_list = df15.values.tolist()
+        try: # 도서 클릭안하고 도서수정 버튼 눌렀을 경우 예외처리
+            aaa = self.Treeview1.focus() # 트리뷰 클릭한 줄
+            treeviewValues = self.Treeview1.item(aaa).get('values')
+            if treeviewValues[4] =='탈퇴회원':
+                messagebox.showinfo("알림", "탈퇴한 회원입니다. ")
+            else:
+                for k in df5_list:
+                    if treeviewValues[3] == k[0]  : # treeviewValues[3]은 전화번호
+                        self.userup(k[1], k[2], k[3], k[0], k[4], k[8])
+        except IndexError:
+            messagebox.showinfo("알림", "회원을 클릭해주세요.")
+            print("회원을 클릭해주세요. ")
 
 
     ######################################## 유저 삭제 ##########################################
