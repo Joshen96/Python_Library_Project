@@ -749,7 +749,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
                 for e in df2_list:
                     # 표에 데이터 삽입
                     gen1 = self.gender1(str(e[3]))
-                    self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen1, e[0], self.currentUser(e[5]), e[7], e[4] ), iid= c-1)
+                    self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen1, e[0], self.currentUser(e[6]), e[7], e[4] ), iid= c-1)
                     c += 1
                 self.User_add.destroy()
                 #self.self.User_add.protocol("WM_DELETE_WINDOW", saveCheck)
