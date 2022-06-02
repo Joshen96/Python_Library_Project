@@ -1238,6 +1238,8 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             treeviewValues = self.Treeview1.item(aaa).get('values')
             if treeviewValues[4] =='탈퇴회원':
                 messagebox.showinfo("알림", "탈퇴한 회원입니다. ")
+            elif treeviewValues[5] !=0:
+                messagebox.showinfo("알림", "대여중인 회원은 수정이불가합니다. ")
             else:
                 for k in df5_list:
                     if treeviewValues[3] == k[0]  : # treeviewValues[3]은 전화번호
