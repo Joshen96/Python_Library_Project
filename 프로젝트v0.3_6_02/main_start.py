@@ -1327,47 +1327,52 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
     def userDelete(self, master):
         print("유저 탈퇴 함수")
         df12 = pd.read_csv ('user.csv')
-        bbb = self.Treeview1.focus()
-        treeviewValues = self.Treeview1.item(bbb).get('values')
-        if messagebox.askyesno("탈퇴", "정말 탈퇴하시겠습니까? "):
+        try: # 회원 클릭안하고 탈퇴 버튼 눌렀을 경우 예외처리
+            bbb = self.Treeview1.focus()
+            treeviewValues = self.Treeview1.item(bbb).get('values')
             if str(treeviewValues[4]) == '회원':
                 if str(treeviewValues[5])=="0":
-                    number = str(treeviewValues[3])  # treeviewValues[3] = 전화번호
-                    b = df12.index[df12['User_number'] == number].tolist()
-                    print(b)
-                    
+                    if messagebox.askyesno("탈퇴", "정말 탈퇴하시겠습니까? "):
+                        number = str(treeviewValues[3])  # treeviewValues[3] = 전화번호
+                        b = df12.index[df12['User_number'] == number].tolist()
+                        print(b)
+                        
 
 
-                    #
-                    UserNumber=df12.loc[b[0],'User_number']
-                    ISBN_index=df12.index[df12['User_number']==UserNumber]
-                    userdelday = date.today()
-                    df12.loc[ISBN_index,'User_out_Date']=date.isoformat(userdelday)       ##여기 탈퇴날짜 넣어줘야함
+                        #
+                        UserNumber=df12.loc[b[0],'User_number']
+                        ISBN_index=df12.index[df12['User_number']==UserNumber]
+                        userdelday = date.today()
+                        df12.loc[ISBN_index,'User_out_Date']=date.isoformat(userdelday)       ##여기 탈퇴날짜 넣어줘야함
 
-                    print(df12)
-                    df12.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
-                    #
+                        print(df12)
+                        df12.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+                        #
 
 
-                    
+                        
 
-                    df14 = pd.read_csv ('user.csv')
-                    df14_list = df14.values.tolist()
-                    c = 1
-                    for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
-                        self.Treeview1.delete(i)        
-                    for e in df14_list:
-                        # 표에 데이터 삽입
-                        gen = self.gender1(e[3])
-                        cUser = self.currentUser(e[6])
-                        self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, e[7],e[4] ), iid= c-1)
-                        c += 1
-                    messagebox.showinfo("탈퇴완료", "탈퇴 하였습니다.")
+                        df14 = pd.read_csv ('user.csv')
+                        df14_list = df14.values.tolist()
+                        c = 1
+                        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                            self.Treeview1.delete(i)        
+                        for e in df14_list:
+                            # 표에 데이터 삽입
+                            gen = self.gender1(e[3])
+                            cUser = self.currentUser(e[6])
+                            self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, e[7],e[4] ), iid= c-1)
+                            c += 1
+                        messagebox.showinfo("탈퇴완료", "탈퇴 하였습니다.")
                 else:
                     messagebox.showinfo("탈퇴 불가", "현대 책을 대여중인 회원입니다.")
-            else :
+            else:
                 messagebox.showinfo("유저삭제 실패", " 이미 탈퇴한 유저입니다.")
-
+        except IndexError:
+            messagebox.showinfo("알림", "회원을 클릭해주세요.")
+            print("회원을 클릭해주세요. ")
+            
+            
     ### 메인창 새로고침 함수#####
     def userupdate(self):
         df12 = pd.read_csv ('user.csv', dtype=str)
@@ -1627,8 +1632,8 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
 
     def RentuserSearch(self):  # 대여회원 검색
         df2 = pd.read_csv ('user.csv') ## 회원정보 받아오기
-
-        df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ") # 탈퇴한 회원은 못빌리도록 미리 빼둠
+        df2_rent_can_user=df2[df2['User_out_Date']==" "]
+        #df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ") # 탈퇴한 회원은 못빌리도록 미리 빼둠
         df2_rent_can_user_list = df2_rent_can_user.values.tolist() 
 
         searchText = self.rent_name_Entry.get() # 검색창 값 가져오기
@@ -1703,7 +1708,8 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
         if df_book.empty:
             messagebox.showinfo("경고","도서가 없습니다.")
         else:   
-            df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
+            df_rent_can_book=df_book[df_book['Book_pre']==0]
+            #df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
             df_rent_can_book_list = df_rent_can_book.values.tolist()
 
             #도서레이블
@@ -1878,7 +1884,8 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             df_rent = pd.read_csv('Rent.csv')
             print('히얼')
         
-            df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
+            df_rent_can_book=df_book[df_book['Book_pre']==0]
+            #df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
             df_rent_can_book_list = df_rent_can_book.values.tolist()
             
             for i in self.book_treeview.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
