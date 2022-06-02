@@ -807,72 +807,73 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         phone_check=Numberfist+Numbermid+Numbertail # 전화번호에 문자 있는지 체크용
 
         ########################여기서 중복되는 휴대폰 번호 체크함
-        dfu = pd.read_csv('user.csv')
-        user_Number=dfu['User_number']
-        Number_val=user_Number.values
-        Number_list=Number_val.tolist()
-        if phone_number in Number_list:
-            messagebox.showinfo("중복", "전화번호가 중복됩니다, 다시입력하세요. ")
-        elif False==phone_check.isdigit(): # 전화번호에 문자있는지
-            messagebox.showinfo("오류", "전화번호에 숫자를 입력하세요. ")
-        else:
-            
-            img = photo.cget('text')
-            if self.User_add_nameEntry.get() == '':
-                messagebox.showinfo("오류", "이름을 입력하세요. ")
+        img = photo.cget('text')
+        if self.User_add_nameEntry.get() == '':
+            messagebox.showinfo("오류", "이름을 입력하세요. ")
+            self.User_add.lift()
+        elif Numberfist == '':
+            messagebox.showinfo("오류", "전화번호를 입력하세요. ")
+            self.User_add.lift()
+        elif Numbermid=='':
+            messagebox.showinfo("오류", "전화번호를 입력하세요. ")
+            self.User_add.lift()
+        elif Numbertail=='':
+            messagebox.showinfo("오류", "전화번호를 입력하세요. ")
+            self.User_add.lift()
+        elif email.get() == '':
+            messagebox.showinfo("오류", "이메일을 입력하세요. ")
+            self.User_add.lift()
+        else :
+            dfu = pd.read_csv('user.csv')
+            user_Number=dfu['User_number']
+            Number_val=user_Number.values
+            Number_list=Number_val.tolist()
+            if phone_number in Number_list:
+                messagebox.showinfo("중복", "전화번호가 중복됩니다, 다시입력하세요. ")
                 self.User_add.lift()
-            elif Numberfist == '':
-                messagebox.showinfo("오류", "전화번호를 입력하세요. ")
+            elif False==phone_check.isdigit(): # 전화번호에 문자있는지
+                messagebox.showinfo("오류", "전화번호에 숫자를 입력하세요. ")
                 self.User_add.lift()
-            elif Numbermid=='':
-                messagebox.showinfo("오류", "전화번호를 입력하세요. ")
-                self.User_add.lift()
-            elif Numbertail=='':
-                messagebox.showinfo("오류", "전화번호를 입력하세요. ")
-                self.User_add.lift()
-            elif email.get() == '':
-                messagebox.showinfo("오류", "이메일을 입력하세요. ")
-                self.User_add.lift()
-            else :
+            else:
                 print(type(photo.cget('text')))
                 if photo.cget('text') == ' ':  # 빈칸 들어가야 함 
                     img = 'defalt.gif'
 
-                gen = self.gender1(gender.get())
-                
-                User_Reg_Date = str(date.today())
-                print(type(self.User_add_nameEntry.get()))
-                self.addtext = "이름 : " + self.User_add_nameEntry.get()+ "\n" + "생년월일 : " + birth + "\n" + "성별 : " + gen + "\n"+ "전화번호 : " + phone_number + "\n" + "이메일 주소 : " + email.get()\
-                                + "\n" + "등록 날짜 : " + User_Reg_Date+ "\n"
-                
-                print(self.addtext)
-                if messagebox.askyesno("등록", self.addtext + "정말 등록하시겠습니까? "):
-                    print("메시지박스 예스 일때 : ")
-                    print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스#####
-                    df1 = pd.read_csv ('user.csv', dtype=str)
-                    num = int(len(df1))
-                    print(num)
-                    df1.loc[num] = [phone_number, self.User_add_nameEntry.get(), birth, str(gender.get()), email.get(), date.today(), " ", '0', img]
-                    df1.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+                    gen = self.gender1(gender.get())
+                    
+                    User_Reg_Date = str(date.today())
+                    print(type(self.User_add_nameEntry.get()))
+                    self.addtext = "이름 : " + self.User_add_nameEntry.get()+ "\n" + "생년월일 : " + birth + "\n" + "성별 : " + gen + "\n"+ "전화번호 : " + phone_number + "\n" + "이메일 주소 : " + email.get()\
+                                    + "\n" + "등록 날짜 : " + User_Reg_Date+ "\n"
+                    
+                    print(self.addtext)
+                    if messagebox.askyesno("등록", self.addtext + "정말 등록하시겠습니까? "):
+                        print("메시지박스 예스 일때 : ")
+                        print("@@@@@@@@@@@@@@@@@@@@@")  #### 데이터 확인 소스#####
+                        df1 = pd.read_csv ('user.csv', dtype=str)
+                        num = int(len(df1))
+                        print(num)
+                        df1.loc[num] = [phone_number, self.User_add_nameEntry.get(), birth, str(gender.get()), email.get(), date.today(), " ", '0', img]
+                        df1.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
 
-                    df2 = pd.read_csv ('user.csv', dtype=str)   
-                    df2_list = df2.values.tolist()
-                    c = 1
-                    for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
-                        self.Treeview1.delete(i)        
-                    for e in df2_list:
-                        # 표에 데이터 삽입
-                        gen1 = self.gender1(int(e[3]))
-                        self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen1, e[0], self.currentUser(e[6]), e[7], e[4] ), iid= c-1)
-                        c += 1
-                    self.User_add.destroy()
-                    messagebox.showinfo("등록완료", "등록완료되었습니다. ")
-                    #self.self.User_add.protocol("WM_DELETE_WINDOW", saveCheck)
-                else:
-                    self.User_add.lift()
-                    #self.User_add.deiconify()
-                    #self.User_add.lift()
-                    #print("존재")
+                        df2 = pd.read_csv ('user.csv', dtype=str)   
+                        df2_list = df2.values.tolist()
+                        c = 1
+                        for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                            self.Treeview1.delete(i)        
+                        for e in df2_list:
+                            # 표에 데이터 삽입
+                            gen1 = self.gender1(int(e[3]))
+                            self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen1, e[0], self.currentUser(e[6]), e[7], e[4] ), iid= c-1)
+                            c += 1
+                        self.User_add.destroy()
+                        messagebox.showinfo("등록완료", "등록완료되었습니다. ")
+                        #self.self.User_add.protocol("WM_DELETE_WINDOW", saveCheck)
+                    else:
+                        self.User_add.lift()
+                        #self.User_add.deiconify()
+                        #self.User_add.lift()
+                        #print("존재")
 
     def daychange() : # 생년월일 월에따른 일 수
         pass
