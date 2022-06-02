@@ -1280,41 +1280,44 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
     def userReJoin(self, master):
         print("유저 재가입 함수")
         df12 = pd.read_csv ('user.csv')
-        bbb = self.Treeview1.focus()
-        treeviewValues = self.Treeview1.item(bbb).get('values')
-        if str(treeviewValues[4]) == '탈퇴회원':
-            if messagebox.askyesno("재가입", "정말 재가입하시겠습니까? "):
-                number = str(treeviewValues[3])  # treeviewValues[3] = 전화번호
-                b = df12.index[df12['User_number'] == number].tolist()
-                print(b)
-                    
+        try: # 회원 클릭안하고 회원재가입 버튼 눌렀을 경우 예외처리
+            bbb = self.Treeview1.focus()
+            treeviewValues = self.Treeview1.item(bbb).get('values')
+            if str(treeviewValues[4]) == '탈퇴회원':
+                if messagebox.askyesno("재가입", "정말 재가입하시겠습니까? "):
+                    number = str(treeviewValues[3])  # treeviewValues[3] = 전화번호
+                    b = df12.index[df12['User_number'] == number].tolist()
+                    print(b)
+                        
 
 
-                #
-                UserNumber=df12.loc[b[0],'User_number']
-                ISBN_index=df12.index[df12['User_number']==UserNumber]
-                userdelday = date.today()
-                df12.loc[ISBN_index,'User_Reg_Date']=date.isoformat(userdelday)       ##여기 재가입날짜를 가입날짜로 설정
-                df12.loc[ISBN_index,'User_out_Date']=" "                              ##탈퇴회원 에서 회원으로 변경
-                print(df12)
-                df12.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
-                #
+                    #
+                    UserNumber=df12.loc[b[0],'User_number']
+                    ISBN_index=df12.index[df12['User_number']==UserNumber]
+                    userdelday = date.today()
+                    df12.loc[ISBN_index,'User_Reg_Date']=date.isoformat(userdelday)       ##여기 재가입날짜를 가입날짜로 설정
+                    df12.loc[ISBN_index,'User_out_Date']=" "                              ##탈퇴회원 에서 회원으로 변경
+                    print(df12)
+                    df12.to_csv('user.csv', mode='w', sep=',', index=False, encoding='utf-8-sig')
+                    #
 
-                df14 = pd.read_csv ('user.csv')
-                df14_list = df14.values.tolist()
-                c = 1
-                for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
-                    self.Treeview1.delete(i)        
-                for e in df14_list:
-                    # 표에 데이터 삽입
-                    gen = self.gender1(e[3])
-                    cUser = self.currentUser(e[6])
-                    self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, e[7],e[4] ), iid= c-1)
-                    c += 1
-                messagebox.showinfo("재가입완료", "재가입 하였습니다.")  
-        else :
-            messagebox.showinfo("회원임", "이미 회원 입니다.")
-
+                    df14 = pd.read_csv ('user.csv')
+                    df14_list = df14.values.tolist()
+                    c = 1
+                    for i in self.Treeview1.get_children(): # 트리뷰의 값들을 다 지워주고 창 새로고침
+                        self.Treeview1.delete(i)        
+                    for e in df14_list:
+                        # 표에 데이터 삽입
+                        gen = self.gender1(e[3])
+                        cUser = self.currentUser(e[6])
+                        self.Treeview1.insert("", END, text=c, values=(e[1], e[2], gen, e[0], cUser, e[7],e[4] ), iid= c-1)
+                        c += 1
+                    messagebox.showinfo("재가입완료", "재가입 하였습니다.")  
+            else :
+                messagebox.showinfo("회원임", "이미 회원 입니다.")
+        except IndexError:
+            messagebox.showinfo("알림", "회원을 클릭해주세요.")
+            print("회원을 클릭해주세요. ")
 
 
 
