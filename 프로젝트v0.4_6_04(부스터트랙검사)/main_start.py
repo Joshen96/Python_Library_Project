@@ -1410,9 +1410,9 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             c += 1
 
     def userinfo(self): # 트리뷰 클릭한 값 넘기기
+        df2 = pd.read_csv ('user.csv', dtype=str)
+        df2_list = df2.values.tolist()
         try: # 도서 클릭안하고 도서정보 버튼 눌렀을 경우 예외처리
-            df2 = pd.read_csv ('user.csv', dtype=str)
-            df2_list = df2.values.tolist()
             bbb = self.Treeview1.focus() # 트리뷰 클릭한 줄
             print(bbb)
             treeviewValues = self.Treeview1.item(bbb).get('values')
@@ -2011,55 +2011,62 @@ class RentInfo(tk.Frame):  ####  대여 전체 정보 페이지
                 rentyn = '대여중'
             return rentyn  
     def returnbook(self):
-        if messagebox.askokcancel("대여반납", "도서 반납 하시겠습니까?"):
-            Rentdf = pd.read_csv("Rent.csv")
-            print("반납시작")
+        try:
             aaa = self.rentinfo_treeview.focus() # 트리뷰 클릭한 줄
             treeviewValues = self.rentinfo_treeview.item(aaa).get('values')
             if str(treeviewValues[7])=="대여중":
+           
+                Rentdf = pd.read_csv("Rent.csv")
+                print("반납시작")
+                if messagebox.askokcancel("대여반납", "도서 반납 하시겠습니까?"):
                 
-                ReturnSEQ=int(treeviewValues[0])-1
-
-                Returnisbn=treeviewValues[1]
-                Returnnumber=treeviewValues[3]
-                
-
-                Rentdfindex=Rentdf.index[Rentdf['SEQ']==ReturnSEQ]
-                Rentdf.loc[Rentdfindex,'Rent_YN']=1
-                Rentdf.to_csv('Rent.csv',index=False,encoding='utf-8-sig') ##내보내기
-                
-                Rentdf_after = pd.read_csv("Rent.csv")
-                Rentdf_after_list=Rentdf_after.values.tolist()
-                
-                for e in self.rentinfo_treeview.get_children():
-                    self.rentinfo_treeview.delete(e)
-
-                for i in Rentdf_after_list:
-                    YN=self.returnYN(i[7])
-                    SEQ=int(i[0])+1
-                    self.rentinfo_treeview.insert("", END,  values=(SEQ,i[1], i[2], i[3], i[4], i[5], i[6] ,YN), iid=i)
                     
-                
+                    ReturnSEQ=int(treeviewValues[0])-1
+
+                    Returnisbn=treeviewValues[1]
+                    Returnnumber=treeviewValues[3]
+                    
+
+                    Rentdfindex=Rentdf.index[Rentdf['SEQ']==ReturnSEQ]
+                    Rentdf.loc[Rentdfindex,'Rent_YN']=1
+                    Rentdf.to_csv('Rent.csv',index=False,encoding='utf-8-sig') ##내보내기
+                    
+                    Rentdf_after = pd.read_csv("Rent.csv")
+                    Rentdf_after_list=Rentdf_after.values.tolist()
+                    
+                    for e in self.rentinfo_treeview.get_children():
+                        self.rentinfo_treeview.delete(e)
+
+                    for i in Rentdf_after_list:
+                        YN=self.returnYN(i[7])
+                        SEQ=int(i[0])+1
+                        self.rentinfo_treeview.insert("", END,  values=(SEQ,i[1], i[2], i[3], i[4], i[5], i[6] ,YN), iid=i)
+                        
+                    
 
 
-                #####유저와 도서 정보 바꾸기####
-                Bookdf = pd.read_csv('book.csv',encoding='utf-8-sig')
-                Userdf = pd.read_csv('user.csv',encoding='utf-8-sig')
-                
-                rentcount = int(Userdf.loc[Userdf['User_number'].str.contains(Returnnumber),'User_rent_cnt']) # 선택 회원의 대여권수 뽑아오기
-                Number_index=Userdf.index[Userdf['User_number']==Returnnumber] #랜트 한경우  회원의 대여수 증가 
-                Userdf.loc[Number_index,'User_rent_cnt']=rentcount-1
-                ISBN_index=Bookdf.index[Bookdf['Book_ISBN']==Returnisbn]
-                Bookdf.loc[ISBN_index,'Book_pre']=0      #반납 한경우 책 여부0
-                messagebox.showinfo("반납완료","반납이 완료되었습니다.")
-                Bookdf.to_csv('book.csv',index=False,encoding='utf-8-sig') # 도서 랜트여부 여기서 저장
-                Userdf.to_csv('user.csv',index=False,encoding='utf-8-sig') # 유저 랜트수 여기서 저장
+                    #####유저와 도서 정보 바꾸기####
+                    Bookdf = pd.read_csv('book.csv',encoding='utf-8-sig')
+                    Userdf = pd.read_csv('user.csv',encoding='utf-8-sig')
+                    
+                    rentcount = int(Userdf.loc[Userdf['User_number'].str.contains(Returnnumber),'User_rent_cnt']) # 선택 회원의 대여권수 뽑아오기
+                    Number_index=Userdf.index[Userdf['User_number']==Returnnumber] #랜트 한경우  회원의 대여수 증가 
+                    Userdf.loc[Number_index,'User_rent_cnt']=rentcount-1
+                    ISBN_index=Bookdf.index[Bookdf['Book_ISBN']==Returnisbn]
+                    Bookdf.loc[ISBN_index,'Book_pre']=0      #반납 한경우 책 여부0
+                    messagebox.showinfo("반납완료","반납이 완료되었습니다.")
+                    Bookdf.to_csv('book.csv',index=False,encoding='utf-8-sig') # 도서 랜트여부 여기서 저장
+                    Userdf.to_csv('user.csv',index=False,encoding='utf-8-sig') # 유저 랜트수 여기서 저장
 
+                else:
+                    print("반납취소")
             else:
-                messagebox.showinfo("이미반납", "이미반납처리된 내역입니다.")
-        else:
-            print("반납취소")
-    
+                    messagebox.showinfo("이미반납", "이미반납처리된 내역입니다.")
+            
+        except IndexError:
+                messagebox.showinfo("알림", "반납할 내역을 클릭해주세요.")
+                print("반납할 내역을 클릭해주세요. ")
+
     
     
     def rentinfoframe(self):
