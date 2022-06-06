@@ -1213,7 +1213,8 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         phonenumber=Numberfist+'-'+ Numbermid+'-'+Numbertail
         phone_check=Numberfist+Numbermid+Numbertail # 전화번호에 문자 있는지 체크용
         birth2 = self.User_edit_yearCombobox.get() + "-" + self.User_edit_monthCombobox.get()+ "-" + self.User_edit_dayCombobox.get()
-        self.addtext = "이름 : " + self.User_edit_nameEntry.get()+ "\n" + "생년월일 : " + birth2 + "\n" + "성별 : " + str(self.sexcheck2.get()) + \
+        gend=self.gender1(self.sexcheck2.get())
+        self.addtext = "이름 : " + self.User_edit_nameEntry.get()+ "\n" + "생년월일 : " + birth2 + "\n" + "성별 : " + gend + \
             "\n"+ "전화번호 : " + phonenumber + "\n" + "이메일 주소 : " + self.User_edit_emailEntry.get() + "\n" + "사진 : " + self.User_edit_photoLabel2.cget('text')+ "\n"
             
         print(self.addtext)
