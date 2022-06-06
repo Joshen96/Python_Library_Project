@@ -16,7 +16,8 @@ import string
 from datetime import date
 import datetime
 import csv
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 ## 조창현이 추가한 import
 
 #Rentdf = pd.DataFrame(index=range(0,0), columns=['SEQ', 'Book_ISBN','Book_title','User_number','User_name','Rent_date','Rent_retun','Rent_YN'])
@@ -2086,7 +2087,7 @@ class RentInfo(tk.Frame):  ####  대여 전체 정보 페이지
     def rentInfo(self, name, number, title, isbn, rentday, returnday, returnYN):
             self.window = Tk()
             self.window.title("대여 정보")
-            self.window.geometry("300x300+740+270")
+            self.window.geometry("550x300+740+270")
             self.window.resizable(0,0)
             
 
