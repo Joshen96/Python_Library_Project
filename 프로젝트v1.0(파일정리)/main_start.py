@@ -1800,7 +1800,7 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             search_book_btn=ttk.Button(self,text='검색',command=lambda:self.RentuserSearch2()) # 함수 커맨트 빈칸
             search_book_btn.grid(row=1, column=2, columnspan=1, rowspan=1, sticky=W,pady =1)
 
-            name_Label=Label(self, text='빌리는회원 : ' + name +', 전화번호 : ' + number) 
+            name_Label=Label(self, text='빌리는회원 : ' + str(name) +', 전화번호 : ' + number) 
             name_Label.grid(row=1, column=3, columnspan=1, rowspan=1, sticky=N)
 
 
