@@ -1845,8 +1845,10 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             print(event.keycode)
             
     def RentuserSearch2(self):  # 대여도서 검색
-        df2 = pd.read_csv ('book.csv') ## 회원정보 받아오기
-        df2_list = df2.values.tolist()
+
+        df_rent_can_book=df_book[df_book['Book_pre']==0]
+        #df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
+        df_rent_can_book_list = df_rent_can_book.values.tolist()
 
         searchText = self.rent_book_Entry.get() # 검색창 값 가져오기
         print("도서 부분")
@@ -1858,7 +1860,7 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             self.book_treeview.delete(i)
 
         c = 1
-        for e in df2_list:
+        for e in df_rent_can_book_list:
             if searchText in e[0]: # 이름과 부분일치할 경우 
                 # 표에 데이터 삽입
                 rent=self.rent1(e[4])
