@@ -498,7 +498,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
             elif text.get("1.0","end"+"-1c")=="":
                 messagebox.showinfo("오류", "도서 설명을 입력하세요. ")
             else :
-                self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() + "관련링크 : " + link.get("1.0","end"+"-1c")\
+                self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() +"\n"+ "관련링크 : " + link.get("1.0","end"+"-1c")\
                             + "\n" + "ISBN : " + ISBN.get()+ "\n"  + "설명 : " + text.get("1.0","end"+"-1c")+ "\n"
                 if messagebox.askyesno("도서수정", self.addtext + "정말 수정하시겠습니까? "):
                     a = str(treeviewValues[3])  # <class 'int'>
@@ -549,7 +549,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
         print(text.get("1.0","end"+"-1c"))
         print(photo.cget('text'))
 
-        self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() + "관련링크 : " + link.get("1.0","end"+"-1c")\
+        self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() +"\n"+ "관련링크 : " + link.get("1.0","end"+"-1c")\
                         + "\n" + "ISBN : " + ISBN.get()+ "\n" + "사진 : " + photo.cget('text')+ "\n" + "설명 : " + text.get("1.0","end"+"-1c")+ "\n"
         
         df1 = pd.read_csv ('book.csv', dtype=str)
@@ -601,7 +601,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
                 if int(ISBN.get()) in ISBN_list:
                     messagebox.showinfo("오류", "ISBN이 중복됩니다.")
                 else:
-                    self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() + "관련링크 : " + link.get("1.0","end"+"-1c")\
+                    self.addtext = "제목 : " + title.get()+ "\n" + "저자 : " + author.get() + "\n" + "출판사 : " + publisher.get() + "\n"+ "가격 : " + price.get() +"\n"+ "관련링크 : " + link.get("1.0","end"+"-1c")\
                             + "\n" + "ISBN : " + ISBN.get()+ "\n"  + "설명 : " + text.get("1.0","end"+"-1c")+ "\n"
                     if messagebox.askyesno("등록", self.addtext + "정말 등록하시겠습니까? "):
                         print("메시지박스 예스 일때 : ")
@@ -724,7 +724,7 @@ class BookPage(tk.Frame):  #### 전체 도서 페이지
 
 class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     def __init__(self, master):
-        master.geometry("740x340")
+        master.geometry("730x340")
         df2 = pd.read_csv ('user.csv')
         df2_list = df2.values.tolist()
         tk.Frame.__init__(self, master)
@@ -827,7 +827,8 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         print(self.User_add_yearCombobox.get())
         print(birth_year.get())
         birth = self.User_add_yearCombobox.get() + "-" + self.User_add_monthCombobox.get() + "-" + self.User_add_dayCombobox.get()
-        
+        Rbirth = self.User_add_monthCombobox.get()+self.User_add_dayCombobox.get()
+        print(Rbirth)
         Numberfist=self.User_add_phonefront.get()
         Numbermid=self.User_add_phonemid.get()
         Numbertail=self.User_add_phonetail.get()
@@ -864,6 +865,25 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             elif False==phone_check.isdigit(): # 전화번호에 문자있는지
                 messagebox.showinfo("오류", "전화번호에 숫자를 입력하세요. ")
                 self.User_add.lift()
+            elif Rbirth=="0231":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()
+            elif Rbirth=="0230":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()
+            elif Rbirth=="0431":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()
+            elif Rbirth=="0631":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()    
+            elif Rbirth=="0931":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()
+            elif Rbirth=="1131":
+                messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+                self.User_add.lift()
+                
             else:
                 print(type(photo.cget('text')))
                 if photo.cget('text') == ' ':  # 빈칸 들어가야 함 
@@ -933,7 +953,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         self.User_add_birthLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
         #생년월일 년도 콤보박스 ( OO년 )
         years = list(range(1950,2023))
-        self.User_add_yearCombobox=ttk.Combobox(self.User_add_birthFrame, values = years, width=5)
+        self.User_add_yearCombobox=ttk.Combobox(self.User_add_birthFrame, values = years, width=5, state='readonly')
         self.User_add_yearCombobox.current(0)
         self.User_add_yearCombobox.grid(row=0, column=1, sticky=W, padx =2)
         # 생년월일 년 레이블 ( OO년 )
@@ -942,7 +962,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         # 생년월일 월 콤보박스 ( OO월 )
         
         month = list(['01','02','03','04','05','06','07','08','09','10','11','12'])
-        self.User_add_monthCombobox=ttk.Combobox(self.User_add_birthFrame, values = month, width=3)
+        self.User_add_monthCombobox=ttk.Combobox(self.User_add_birthFrame, values = month, width=3, state='readonly')
         self.User_add_monthCombobox.current(0)
         self.User_add_monthCombobox.grid(row=0, column=3, sticky=W, padx =2)
         # 생년월일 월 레이블 ( OO월 )
@@ -952,7 +972,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         day01=list(['01','02','03','04','05','06','07','08','09'])  #생년월일 01 때문에 넣음
         day02=list(range(10,32))
         days = day01+day02
-        self.User_add_dayCombobox=ttk.Combobox(self.User_add_birthFrame, values = days, width=3)
+        self.User_add_dayCombobox=ttk.Combobox(self.User_add_birthFrame, values = days, width=3, state='readonly')
         self.User_add_dayCombobox.current(0)
         self.User_add_dayCombobox.grid(row=0, column=5, sticky=W, padx =2)
         # 생년월일 월 레이블 ( OO월 )
@@ -1077,7 +1097,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             self.User_edit_birthLabel.grid(row=0, column=0, columnspan=1, rowspan=1, sticky=N, padx=10)
             #생년월일 년도 콤보박스 ( OO년 )
             years = list(range(1950,2023))
-            self.User_edit_yearCombobox=ttk.Combobox(self.User_edit_birthFrame, values = years, width=5)
+            self.User_edit_yearCombobox=ttk.Combobox(self.User_edit_birthFrame, values = years, width=5, state='readonly')
             self.User_edit_yearCombobox.current(int(b_list[0]) - 1950)
             self.User_edit_yearCombobox.grid(row=0, column=1, sticky=W, padx =2)
 
@@ -1086,7 +1106,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             self.User_edit_yearLabel.grid(row=0, column=2, sticky=W, padx =2)
             # 생년월일 월 콤보박스 ( OO월 )
             month = list(['01','02','03','04','05','06','07','08','09','10','11','12'])
-            self.User_edit_monthCombobox=ttk.Combobox(self.User_edit_birthFrame, values = month, width=3)
+            self.User_edit_monthCombobox=ttk.Combobox(self.User_edit_birthFrame, values = month, width=3, state='readonly')
             self.User_edit_monthCombobox.current(int(b_list[1]) - 1)
             self.User_edit_monthCombobox.grid(row=0, column=3, sticky=W, padx =2)
 
@@ -1097,7 +1117,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
             day01=list(['01','02','03','04','05','06','07','08','09'])  #생년월일 01 때문에 넣음
             day02=list(range(10,32))
             days = day01+day02
-            self.User_edit_dayCombobox=ttk.Combobox(self.User_edit_birthFrame, values = days, width=3)
+            self.User_edit_dayCombobox=ttk.Combobox(self.User_edit_birthFrame, values = days, width=3, state='readonly')
             self.User_edit_dayCombobox.current(int(b_list[2]) - 1)
             self.User_edit_dayCombobox.grid(row=0, column=5, sticky=W, padx =2)
 
@@ -1217,7 +1237,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         gend=self.gender1(self.sexcheck2.get())
         self.addtext = "이름 : " + self.User_edit_nameEntry.get()+ "\n" + "생년월일 : " + birth2 + "\n" + "성별 : " + gend + \
             "\n"+ "전화번호 : " + phonenumber + "\n" + "이메일 주소 : " + self.User_edit_emailEntry.get() + "\n" + "사진 : " + self.User_edit_photoLabel2.cget('text')+ "\n"
-            
+        Rbirth = self.User_edit_monthCombobox.get()+self.User_edit_dayCombobox.get()
         print(self.addtext)
         df22 = pd.read_csv ('user.csv')
         df22_list = df22.values.tolist()
@@ -1254,6 +1274,33 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
         elif self.User_edit_emailEntry.get() == '':
             messagebox.showinfo("오류", "이메일을 입력하세요. ")
             self.User_edit.lift()
+
+
+
+
+        elif Rbirth=="0231":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift()
+        elif Rbirth=="0230":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift()
+        elif Rbirth=="0431":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift()
+        elif Rbirth=="0631":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift()    
+        elif Rbirth=="0931":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift()
+        elif Rbirth=="1131":
+            messagebox.showinfo("오류", "존재하지 않는 생년월일입니다. ")
+            self.User_edit.lift() 
+
+
+
+
+            
         else :
             if messagebox.askyesno("수정", self.addtext + "정말 수정하시겠습니까? "):
                 a = str(treeviewValues[3])  # <class 'int'>
@@ -1516,7 +1563,7 @@ class Userpage(tk.Frame):   #### 전체 회원 페이지 ~~~~~~~~~~~~~~~~~~~~~~~
 
 class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
     def __init__(self, master):
-        master.geometry("740x340")
+        master.geometry("730x340")
         
       
 
@@ -1532,7 +1579,8 @@ class RentPage(tk.Frame):  #### 대여하기 (이름)선택 페이지
         if df2.empty:
             messagebox.showinfo("경고","회원이 없습니다.")
         else:
-            df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ") # 탈퇴한 회원은 못빌리도록 미리 빼둠
+            df2_rent_can_user=df2[df2['User_out_Date']==" "]
+            #df2_rent_can_user=df2.groupby('User_out_Date').get_group(" ") # 탈퇴한 회원은 못빌리도록 미리 빼둠
             df2_rent_can_user_list = df2_rent_can_user.values.tolist() 
 
             self.master.unbind("<Key>" )
