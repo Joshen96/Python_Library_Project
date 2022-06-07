@@ -1845,7 +1845,8 @@ class RentBook(tk.Frame):  #### 대여하기 (도서) 선택 페이지
             print(event.keycode)
             
     def RentuserSearch2(self):  # 대여도서 검색
-
+        df_book = pd.read_csv ('book.csv')
+        
         df_rent_can_book=df_book[df_book['Book_pre']==0]
         #df_rent_can_book=df_book.groupby('Book_pre').get_group(0)
         df_rent_can_book_list = df_rent_can_book.values.tolist()
